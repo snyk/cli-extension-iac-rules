@@ -32,7 +32,6 @@ func Workflow(
 	if err != nil {
 		return nil, err
 	}
-
 	bundled, err := bundle.BuildBundle(bundle.NewDirReader(prj.Path()))
 	if err != nil {
 		return nil, err
@@ -40,6 +39,7 @@ func Workflow(
 	if err := bundled.Validate(); err != nil {
 		return nil, err
 	}
+	logger.Println("validated bundle")
 
 	targz := &bytes.Buffer{}
 	if err := bundle.NewTarGzWriter(targz).Write(bundled); err != nil {
@@ -47,12 +47,21 @@ func Workflow(
 	}
 	fmt.Fprintf(os.Stderr, "Bundle bytes: %d\n", len(targz.Bytes()))
 
+	client := service.NewClient(
+		ictx.GetNetworkAccess().GetHttpClient(),
+		config.GetString(configuration.API_URL),
+	)
 	manifest := prj.Manifest()
-	fmt.Fprintf(os.Stderr, "Push config: %v\n", manifest.Push)
 	if len(manifest.Push) == 0 {
+		logger.Println("uploading new custom rules bundle")
+		customRulesID, err := client.CreateCustomRules(ctx, defaultOrgID, targz.Bytes())
+		if err != nil {
+			return nil, err
+		}
+
 		manifest.Push = []project.ManifestPush{
 			{
-				CustomRulesID:  "custom-rules-id",
+				CustomRulesID:  customRulesID,
 				OrganizationID: defaultOrgID,
 			},
 		}
@@ -61,18 +70,6 @@ func Workflow(
 			return nil, err
 		}
 	}
-
-	client := service.NewClient(
-		ictx.GetNetworkAccess().GetHttpClient(),
-		config.GetString(configuration.API_URL),
-	)
-
-	if err := client.CustomRules(ctx, defaultOrgID); err != nil {
-		return nil, err
-	}
-
-	logger.Println("Hello world")
-	fmt.Fprintf(os.Stderr, "Hello, world!\n")
 
 	return []workflow.Data{}, nil
 }
