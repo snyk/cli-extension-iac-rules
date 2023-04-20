@@ -69,6 +69,14 @@ func Workflow(
 		if err := prj.WriteChanges(); err != nil {
 			return nil, err
 		}
+	} else {
+		for _, push := range manifest.Push {
+			logger.Println("updating existing custom rules bundle", push.CustomRulesID)
+			err := client.UpdateCustomRules(ctx, push.OrganizationID, push.CustomRulesID, targz.Bytes())
+			if err != nil {
+				return nil, err
+			}
+		}
 	}
 
 	return []workflow.Data{}, nil
