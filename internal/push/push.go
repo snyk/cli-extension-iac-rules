@@ -1,12 +1,14 @@
 package push
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"os"
 
 	"github.com/snyk/go-application-framework/pkg/configuration"
 	"github.com/snyk/go-application-framework/pkg/workflow"
+	"github.com/snyk/policy-engine/pkg/bundle"
 	"github.com/spf13/afero"
 
 	"github.com/snyk/cli-extension-cloud/internal/project"
@@ -30,6 +32,20 @@ func Workflow(
 	if err != nil {
 		return nil, err
 	}
+
+	bundled, err := bundle.BuildBundle(bundle.NewDirReader(prj.Path()))
+	if err != nil {
+		return nil, err
+	}
+	if err := bundled.Validate(); err != nil {
+		return nil, err
+	}
+
+	targz := &bytes.Buffer{}
+	if err := bundle.NewTarGzWriter(targz).Write(bundled); err != nil {
+		return nil, err
+	}
+	fmt.Fprintf(os.Stderr, "Bundle bytes: %d\n", len(targz.Bytes()))
 
 	manifest := prj.Manifest()
 	fmt.Fprintf(os.Stderr, "Push config: %v\n", manifest.Push)
