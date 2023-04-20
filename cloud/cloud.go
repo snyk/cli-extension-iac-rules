@@ -2,9 +2,12 @@ package cloud
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/snyk/go-application-framework/pkg/workflow"
 	"github.com/spf13/pflag"
+
+	"github.com/snyk/cli-extension-cloud/internal/push"
 )
 
 var (
@@ -18,6 +21,7 @@ func CloudWorkflow(
 	logger := ictx.GetLogger()
 
 	logger.Println("Hello world")
+	fmt.Fprintf(os.Stderr, "Hello, world!\n")
 
 	return []workflow.Data{}, nil
 }
@@ -29,6 +33,10 @@ func Init(e workflow.Engine) error {
 
 	if _, err := e.Register(WorkflowID, c, CloudWorkflow); err != nil {
 		return fmt.Errorf("error while registering SBOM workflow: %w", err)
+	}
+
+	if _, err := e.Register(push.WorkflowID, c, push.Workflow); err != nil {
+		return fmt.Errorf("error while registering %s workflow: %w", push.WorkflowID, err)
 	}
 
 	return nil
