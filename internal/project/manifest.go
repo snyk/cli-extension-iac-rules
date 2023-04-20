@@ -19,7 +19,15 @@ var ErrFailedToUnmarshalManifest = errors.New("failed to unmarshal manifest")
 
 // Manifest contains metadata about the custom rules project.
 type Manifest struct {
-	Name string `json:"name"`
+	Name string         `json:"name"`
+	Push []ManifestPush `json:"push,omitempty"`
+}
+
+// ManifestPush contains metadata about where this rule bundle should be pushed
+// to.  Currently this will always be the cloud API service.
+type ManifestPush struct {
+	CustomRulesID  string `json:"custom_rules_id,omitempty"`
+	OrganizationID string `json:"organization_id,omitempty"`
 }
 
 type manifestFile struct {
