@@ -26,7 +26,7 @@ func Workflow(
 	ctx := context.Background()
 	logger := ictx.GetLogger()
 	config := ictx.GetConfiguration()
-	defaultOrgID := config.GetString(configuration.ORGANIZATION)
+	currentOrgID := config.GetString(configuration.ORGANIZATION)
 
 	prj, err := project.FromDir(afero.NewOsFs(), ".")
 	if err != nil {
@@ -52,9 +52,10 @@ func Workflow(
 		config.GetString(configuration.API_URL),
 	)
 	manifest := prj.Manifest()
-	if len(manifest.Push) == 0 {
+	push := GetManifestPushByOrganization(manifest, currentOrgID)
+	if push == nil {
 		logger.Println("uploading new custom rules bundle")
-		customRulesID, err := client.CreateCustomRules(ctx, defaultOrgID, targz.Bytes())
+		customRulesID, err := client.CreateCustomRules(ctx, currentOrgID, targz.Bytes())
 		if err != nil {
 			return nil, err
 		}
@@ -62,7 +63,7 @@ func Workflow(
 		manifest.Push = []project.ManifestPush{
 			{
 				CustomRulesID:  customRulesID,
-				OrganizationID: defaultOrgID,
+				OrganizationID: currentOrgID,
 			},
 		}
 		prj.UpdateManifest(manifest)
@@ -70,14 +71,21 @@ func Workflow(
 			return nil, err
 		}
 	} else {
-		for _, push := range manifest.Push {
-			logger.Println("updating existing custom rules bundle", push.CustomRulesID)
-			err := client.UpdateCustomRules(ctx, push.OrganizationID, push.CustomRulesID, targz.Bytes())
-			if err != nil {
-				return nil, err
-			}
+		logger.Println("updating existing custom rules bundle", push.CustomRulesID)
+		err := client.UpdateCustomRules(ctx, push.OrganizationID, push.CustomRulesID, targz.Bytes())
+		if err != nil {
+			return nil, err
 		}
 	}
 
 	return []workflow.Data{}, nil
+}
+
+func GetManifestPushByOrganization(manifest project.Manifest, organizationID string) *project.ManifestPush {
+	for _, push := range manifest.Push {
+		if push.OrganizationID == organizationID {
+			return &push
+		}
+	}
+	return nil
 }
