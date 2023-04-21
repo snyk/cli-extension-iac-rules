@@ -2,7 +2,6 @@ package cloud
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/snyk/go-application-framework/pkg/workflow"
 	"github.com/spf13/pflag"
@@ -21,7 +20,6 @@ func CloudWorkflow(
 	logger := ictx.GetLogger()
 
 	logger.Println("Hello world")
-	fmt.Fprintf(os.Stderr, "Hello, world!\n")
 
 	return []workflow.Data{}, nil
 }
