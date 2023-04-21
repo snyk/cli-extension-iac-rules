@@ -14,7 +14,7 @@ import (
 )
 
 var (
-	WorkflowID = workflow.NewWorkflowIdentifier("cloud.rules.push")
+	WorkflowID = workflow.NewWorkflowIdentifier("iac.push")
 )
 
 func Workflow(
