@@ -131,7 +131,7 @@ func TestSafeNames(t *testing.T) {
 			},
 		} {
 			t.Run(tc.input, func(t *testing.T) {
-				output, err := safePackageName(tc.input)
+				output, err := SafePackageName(tc.input)
 				assert.Equal(t, tc.expected, output)
 				assert.ErrorIs(t, err, tc.expectedErr)
 			})

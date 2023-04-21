@@ -1,0 +1,44 @@
+package rules.{{.RulePackage}}
+
+import data.snyk
+
+input_type := "{{.InputType}}"
+
+metadata := {{.RuleMetadata}}
+
+{{.PrimaryResourcePlural}} := snyk.resources("{{.PrimaryResourceType}}")
+
+deny[info] {
+	{{.PrimaryResourceSingular}} := {{.PrimaryResourcePlural}}[_]
+	{{.SecondaryResourcePlural}} := snyk.relates({{.PrimaryResourceSingular}}, "{{.Relation}}")
+
+	# TODO: add conditions so that this rule only returns invalid resources. For example:
+	# {{.SecondaryResourceSingular}} := {{.SecondaryResourcePlural}}[_]
+	# {{.SecondaryResourceSingular}}.some_property == "bad value"
+	#
+	# Or, for example, if at least one {{.SecondaryResourceSingular}} is required:
+	# count({{.SecondaryResourcePlural}}) < 1
+
+	info := {
+		"primary_resource": {{.PrimaryResourceSingular}},
+		# If we narrowed down to a particular {{.SecondaryResourceSingular}} like in the above example,
+		# we can include it in the info to indicate that it caused the rule to fail. For example:
+		# "resource": {{.SecondaryResourceSingular}}
+	}
+}
+
+resources[info] {
+	{{.PrimaryResourceSingular}} := {{.PrimaryResourcePlural}}[_]
+	info := {
+		"primary_resource": {{.PrimaryResourceSingular}},
+	}
+}
+
+resources[info] {
+	{{.PrimaryResourceSingular}} := {{.PrimaryResourcePlural}}[_]
+	{{.SecondaryResourcePlural}} := snyk.relates({{.PrimaryResourceSingular}}, "{{.Relation}}")
+	info := {
+		"primary_resource": {{.PrimaryResourceSingular}},
+		"resource": {{.SecondaryResourcePlural}}[_]
+	}
+}

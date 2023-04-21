@@ -129,7 +129,8 @@ func TestProjectWriteChanges(t *testing.T) {
 		assert.Empty(t, p.ListRules())
 
 		// Add a rule and write the changes to disk
-		p.AddRule("TEST_001", "main.rego", []byte{})
+		err = p.AddRule("TEST_001", "main.rego", []byte{})
+		assert.NoError(t, err)
 		err = p.WriteChanges()
 		assert.NoError(t, err)
 
@@ -196,5 +197,34 @@ func TestProjectWriteChanges(t *testing.T) {
 		updated, err := FromDir(fsys, "new")
 		assert.NoError(t, err)
 		assert.Equal(t, expected, updated.RuleTestFixtures())
+	})
+
+	t.Run("added relation", func(t *testing.T) {
+		// Initialize a new project
+		fsys := afero.NewMemMapFs()
+		p, err := FromDir(fsys, "new")
+		assert.NoError(t, err)
+		relations, err := p.ListRelations()
+		assert.NoError(t, err)
+		assert.Empty(t, relations)
+
+		// Add a relation and write the changes to disk
+		err = p.AddRelation(`relation[info] {
+			info := snyk.relation_from_fields(
+                "aws_s3_bucket.logging",
+                {"aws_s3_bucket": ["id", "bucket"]},
+                {"aws_s3_bucket_logging": ["bucket"]},
+        	)
+		}`)
+		assert.NoError(t, err)
+		err = p.WriteChanges()
+		assert.NoError(t, err)
+
+		// Re-read the project from disk and assert that the new rule is listed
+		updated, err := FromDir(fsys, "new")
+		assert.NoError(t, err)
+		relations, err = updated.ListRelations()
+		assert.NoError(t, err)
+		assert.Equal(t, []string{"aws_s3_bucket.logging"}, relations)
 	})
 }

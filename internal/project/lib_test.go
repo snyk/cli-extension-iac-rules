@@ -44,27 +44,33 @@ func TestLibFromDir(t *testing.T) {
 func TestLibWriteChanges(t *testing.T) {
 	t.Run("should do nothing when dir exists", func(t *testing.T) {
 		fsys := afero.NewMemMapFs()
+		relations, err := newRelationsFile(ExistingFile("lib/relations.rego"))
+		assert.NoError(t, err)
 		l := &libDir{
-			Dir: ExistingDir("lib"),
+			Dir:       ExistingDir("lib"),
+			relations: relations,
 		}
-		err := l.WriteChanges(fsys)
+		err = l.WriteChanges(fsys)
 		assert.NoError(t, err)
 		exists, err := afero.DirExists(fsys, "lib")
 		assert.NoError(t, err)
 		assert.False(t, exists)
 	})
-	t.Run("should create dir and gitkeep when dir does not exist", func(t *testing.T) {
+	t.Run("should create dir and relations when dir does not exist", func(t *testing.T) {
 		fsys := afero.NewMemMapFs()
+		relations, err := newRelationsFile(NewFile("lib/relations.rego"))
+		assert.NoError(t, err)
 		l := &libDir{
-			Dir: NewDir("lib"),
+			Dir:       NewDir("lib"),
+			relations: relations,
 		}
-		err := l.WriteChanges(fsys)
+		err = l.WriteChanges(fsys)
 		assert.NoError(t, err)
 		dirExists, err := afero.DirExists(fsys, "lib")
 		assert.NoError(t, err)
 		assert.True(t, dirExists)
-		gitkeepExists, err := afero.Exists(fsys, "lib/.gitkeep")
+		relationsExists, err := afero.Exists(fsys, "lib/relations")
 		assert.NoError(t, err)
-		assert.True(t, gitkeepExists)
+		assert.True(t, relationsExists)
 	})
 }

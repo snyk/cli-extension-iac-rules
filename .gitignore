@@ -1,0 +1,4 @@
+.scratch
+.vscode
+extension-tester
+!cmd/extension-tester
