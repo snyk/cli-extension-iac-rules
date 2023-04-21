@@ -30,6 +30,17 @@ type ManifestPush struct {
 	OrganizationID string `json:"organization_id,omitempty"`
 }
 
+// copy creates a copy of the manifest so we don't accidentally modify the
+// original.
+func (m Manifest) copy() Manifest {
+	cpy := m
+	if m.Push != nil {
+		cpy.Push = make([]ManifestPush, len(m.Push))
+		copy(cpy.Push, m.Push)
+	}
+	return cpy
+}
+
 type manifestFile struct {
 	*File
 	manifest Manifest

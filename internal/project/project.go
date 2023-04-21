@@ -38,10 +38,7 @@ func (p *Project) WriteChanges() error {
 
 // Manifest retrieves a copy of the project's manifest.
 func (p *Project) Manifest() Manifest {
-	manifest := p.manifestFile.manifest
-	manifest.Push = make([]ManifestPush, len(p.manifestFile.manifest.Push))
-	copy(manifest.Push, p.manifestFile.manifest.Push)
-	return manifest
+	return p.manifestFile.manifest.copy()
 }
 
 // UpdateManifest updates the project's manifest.
