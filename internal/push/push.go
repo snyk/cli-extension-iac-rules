@@ -3,8 +3,6 @@ package push
 import (
 	"bytes"
 	"context"
-	"fmt"
-	"os"
 
 	"github.com/snyk/go-application-framework/pkg/configuration"
 	"github.com/snyk/go-application-framework/pkg/workflow"
@@ -45,7 +43,6 @@ func Workflow(
 	if err := bundle.NewTarGzWriter(targz).Write(bundled); err != nil {
 		return nil, err
 	}
-	fmt.Fprintf(os.Stderr, "Bundle bytes: %d\n", len(targz.Bytes()))
 
 	client := service.NewClient(
 		ictx.GetNetworkAccess().GetHttpClient(),
