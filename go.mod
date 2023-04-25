@@ -5,7 +5,6 @@ go 1.19
 require (
 	github.com/snyk/go-application-framework v0.0.0-20230404151513-a84c81d317c6
 	github.com/snyk/policy-engine v0.20.0
-	github.com/snyk/rest-go-libs/v5 v5.1.4
 	github.com/spf13/afero v1.9.2
 	github.com/spf13/pflag v1.0.5
 	github.com/stretchr/testify v1.8.1
@@ -19,7 +18,6 @@ require (
 	github.com/ghodss/yaml v1.0.0 // indirect
 	github.com/golang/mock v1.6.0 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
-	github.com/google/uuid v1.3.0 // indirect
 	github.com/hashicorp/go-uuid v1.0.3 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/jcmturner/aescts/v2 v2.0.0 // indirect

@@ -7,8 +7,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-
-	"github.com/snyk/rest-go-libs/v5/jsonapi"
+	"strings"
 )
 
 const version = "2022-12-21~beta"
@@ -42,17 +41,8 @@ func (c *Client) CreateCustomRules(ctx context.Context, orgID string, targz []by
 		return "", err
 	}
 
-	expectedStatusCode := http.StatusCreated
-	if rsp.StatusCode != expectedStatusCode {
-		return "", fmt.Errorf("unexpected status code: %d", rsp.StatusCode)
-	}
-
-	body, err := io.ReadAll(rsp.Body)
-	if err != nil {
-		return "", err
-	}
-	var response jsonapi.ResourceDocument
-	if err := json.Unmarshal(body, &response); err != nil {
+	var response resourceDocument
+	if err := parseResponse(rsp, http.StatusCreated, &response); err != nil {
 		return "", err
 	}
 	return response.Data.ID, nil
@@ -80,19 +70,39 @@ func (c *Client) UpdateCustomRules(
 	if err != nil {
 		return err
 	}
+	var response resourceDocument
+	return parseResponse(rsp, http.StatusOK, &response)
+}
 
-	expectedStatusCode := http.StatusOK
-	if rsp.StatusCode != expectedStatusCode {
-		return fmt.Errorf("unexpected status code: %d", rsp.StatusCode)
-	}
-
+func parseResponse(rsp *http.Response, expectedStatusCode int, expectedDocument interface{}) error {
 	body, err := io.ReadAll(rsp.Body)
+	defer rsp.Body.Close()
 	if err != nil {
 		return err
 	}
-	var response jsonapi.ResourceDocument
-	if err := json.Unmarshal(body, &response); err != nil {
-		return err
+
+	if rsp.StatusCode != expectedStatusCode {
+		var errorDoc errorDocument
+		if err := json.Unmarshal(body, &errorDoc); err != nil {
+			return fmt.Errorf("response %d: %s", rsp.StatusCode, err)
+		}
+		return fmt.Errorf("%s", errorDocumentToString(errorDoc))
 	}
-	return nil
+	return json.Unmarshal(body, expectedDocument)
+}
+
+func errorDocumentToString(err errorDocument) string {
+	msgs := []string{}
+	if len(err.Errors) == 0 {
+		msgs = append(msgs, "unknown error")
+	} else {
+		for _, obj := range err.Errors {
+			msgs = append(msgs, errorObjectToString(obj))
+		}
+	}
+	return strings.Join(msgs, "\n")
+}
+
+func errorObjectToString(err errorObject) string {
+	return fmt.Sprintf("%s %s: %s", err.Status, err.Title, err.Detail)
 }
