@@ -77,14 +77,14 @@ func (p *Project) AddRule(ruleID string, regoFileName string, contents []byte) (
 // AddRuleSpec adds a rule to the project. The given rule ID will be transformed
 // to a valid package name and the spec name will be transformed to fit similar
 // constraints.
-func (p *Project) AddRuleSpec(ruleID string, name string, contents []byte) error {
+func (p *Project) AddRuleSpec(ruleID string, name string, contents []byte) (string, error) {
 	ruleDirName, err := SafePackageName(ruleID)
 	if err != nil {
-		return err
+		return "", err
 	}
 	safeName, err := safeFilename(name)
 	if err != nil {
-		return err
+		return "", err
 	}
 	return p.specDir.addRuleSpec(ruleDirName, safeName, contents)
 }
@@ -140,7 +140,7 @@ func (p *Project) RuleMetadata() (map[string]RuleMetadata, error) {
 	metadata := map[string]RuleMetadata{}
 	for _, r := range eng.Metadata(ctx) {
 		if r.Error != "" {
-			continue
+			return nil, fmt.Errorf(r.Error)
 		}
 		metadata[r.Metadata.ID] = RuleMetadata{
 			ID:           r.Metadata.ID,
@@ -170,6 +170,9 @@ func (p *Project) InputTypeForRule(ruleID string) (string, error) {
 		if r.Error != "" {
 			continue
 		}
+		if r.Metadata.ID != ruleID {
+			continue
+		}
 		pkg = r.Package
 	}
 	if pkg == "" {
@@ -178,7 +181,7 @@ func (p *Project) InputTypeForRule(ruleID string) (string, error) {
 
 	var inputType string
 	err = eng.Query(ctx, &engine.QueryOptions{
-		Query: fmt.Sprintf("data.%s.input_type", pkg),
+		Query: fmt.Sprintf("%s.input_type", pkg),
 		ResultProcessor: func(v ast.Value) error {
 			if err := rego.Bind(v, &inputType); err != nil {
 				return err

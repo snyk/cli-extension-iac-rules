@@ -103,7 +103,7 @@ func (t *specDir) addRuleSpecsDir(ruleDirName string) *ruleSpecsDir {
 	return t.ruleSpecs[ruleDirName]
 }
 
-func (t *specDir) addRuleSpec(ruleDirName string, name string, contents []byte) error {
+func (t *specDir) addRuleSpec(ruleDirName string, name string, contents []byte) (string, error) {
 	rt, ok := t.ruleSpecs[ruleDirName]
 	if !ok {
 		rt = t.addRuleSpecsDir(ruleDirName)
@@ -177,10 +177,10 @@ func (t *ruleSpecsDir) WriteChanges(fsys afero.Fs) error {
 	return nil
 }
 
-func (t *ruleSpecsDir) addFixture(name string, contents []byte) error {
+func (t *ruleSpecsDir) addFixture(name string, contents []byte) (string, error) {
 	f, exists := t.fixtures[name]
 	if exists {
-		return fmt.Errorf("%w: %s", ErrRuleSpecAlreadyExists, f.Input.Path())
+		return "", fmt.Errorf("%w: %s", ErrRuleSpecAlreadyExists, f.Input.Path())
 	}
 	input := NewFile(filepath.Join(t.path, "inputs", name))
 	input.UpdateContents(contents)
@@ -188,7 +188,7 @@ func (t *ruleSpecsDir) addFixture(name string, contents []byte) error {
 		name:  name,
 		Input: input,
 	}
-	return nil
+	return input.Path(), nil
 }
 
 func ruleSpecsFromDir(fsys afero.Fs, parent string, name string) (*ruleSpecsDir, error) {
