@@ -1,6 +1,6 @@
 module github.com/snyk/cli-extension-cloud
 
-go 1.19
+go 1.18
 
 require (
 	github.com/snyk/go-application-framework v0.0.0-20230404151513-a84c81d317c6
