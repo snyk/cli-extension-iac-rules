@@ -62,14 +62,14 @@ func (p *Project) ListRules() []string {
 // AddRule adds a rule to the project. The given rule ID will be transformed to
 // a valid package name and the rego filename will be transformed to fit
 // similar constraints.
-func (p *Project) AddRule(ruleID string, regoFileName string, contents []byte) error {
+func (p *Project) AddRule(ruleID string, regoFileName string, contents []byte) (string, error) {
 	ruleDirName, err := SafePackageName(ruleID)
 	if err != nil {
-		return err
+		return "", err
 	}
 	safeRegoFileName, err := safeFilename(regoFileName)
 	if err != nil {
-		return err
+		return "", err
 	}
 	return p.rulesDir.addRule(ruleDirName, safeRegoFileName, contents)
 }

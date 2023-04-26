@@ -28,14 +28,14 @@ func (r *rulesDir) WriteChanges(fsys afero.Fs) error {
 	return nil
 }
 
-func (r *rulesDir) addRule(ruleDirName string, regoFileName string, contents []byte) error {
+func (r *rulesDir) addRule(ruleDirName string, regoFileName string, contents []byte) (string, error) {
 	existing, exists := r.rules[ruleDirName]
 	if exists {
-		return fmt.Errorf("%w: %s", ErrRuleDirAlreadyExists, existing.Path())
+		return "", fmt.Errorf("%w: %s", ErrRuleDirAlreadyExists, existing.Path())
 	}
 	path := filepath.Join(r.path, ruleDirName)
 	r.rules[ruleDirName] = newRuleDir(path, regoFileName, contents)
-	return nil
+	return r.rules[ruleDirName].files[regoFileName].Path(), nil
 }
 
 func (r *rulesDir) ruleDirNames() []string {

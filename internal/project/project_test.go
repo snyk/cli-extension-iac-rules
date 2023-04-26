@@ -148,8 +148,9 @@ func TestProjectWriteChanges(t *testing.T) {
 		assert.Empty(t, p.ListRules())
 
 		// Add a rule and write the changes to disk
-		err = p.AddRule("TEST_001", "main.rego", []byte{})
+		path, err := p.AddRule("TEST_001", "main.rego", []byte{})
 		assert.NoError(t, err)
+		assert.Equal(t, "new/rules/TEST_001/main.rego", path)
 		err = p.WriteChanges()
 		assert.NoError(t, err)
 

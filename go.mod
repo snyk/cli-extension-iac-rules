@@ -4,9 +4,11 @@ go 1.18
 
 require (
 	github.com/erikgeiser/promptkit v0.8.0
+	github.com/gertd/go-pluralize v0.2.1
 	github.com/hashicorp/go-multierror v1.1.1
 	github.com/open-policy-agent/opa v0.51.0
-	github.com/snyk/go-application-framework v0.0.0-20230404151513-a84c81d317c6
+	github.com/rs/zerolog v1.29.1
+	github.com/snyk/go-application-framework v0.0.0-20230427110433-9dbd3b509e6f
 	github.com/snyk/policy-engine v0.21.1
 	github.com/spf13/afero v1.9.2
 	github.com/spf13/pflag v1.0.5
@@ -91,7 +93,6 @@ require (
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/rcrowley/go-metrics v0.0.0-20201227073835-cf1acfcdf475 // indirect
 	github.com/rivo/uniseg v0.4.3 // indirect
-	github.com/rs/zerolog v1.26.1 // indirect
 	github.com/snyk/go-httpauth v0.0.0-20230328170530-1af63c87b650 // indirect
 	github.com/spf13/cast v1.5.0 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
