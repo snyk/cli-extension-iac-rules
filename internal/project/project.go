@@ -19,7 +19,7 @@ type Project struct {
 	FS           afero.Fs
 	rulesDir     *rulesDir
 	libDir       *libDir
-	testsDir     *testsDir
+	specsDir     *specsDir
 	manifestFile *manifestFile
 }
 
@@ -35,7 +35,7 @@ func (p *Project) WriteChanges() error {
 	if err := p.libDir.WriteChanges(p.FS); err != nil {
 		return err
 	}
-	if err := p.testsDir.WriteChanges(p.FS); err != nil {
+	if err := p.specsDir.WriteChanges(p.FS); err != nil {
 		return err
 	}
 	if err := p.manifestFile.WriteChanges(p.FS); err != nil {
@@ -74,10 +74,10 @@ func (p *Project) AddRule(ruleID string, regoFileName string, contents []byte) e
 	return p.rulesDir.addRule(ruleDirName, safeRegoFileName, contents)
 }
 
-// AddRuleTestFixture adds a rule to the project. The given rule ID will be
-// transformed to a valid package name and the test fixture name will be
-// transformed to fit similar constraints.
-func (p *Project) AddRuleTestFixture(ruleID string, name string, contents []byte) error {
+// AddRuleSpec adds a rule to the project. The given rule ID will be transformed
+// to a valid package name and the spec name will be transformed to fit similar
+// constraints.
+func (p *Project) AddRuleSpec(ruleID string, name string, contents []byte) error {
 	ruleDirName, err := SafePackageName(ruleID)
 	if err != nil {
 		return err
@@ -86,14 +86,14 @@ func (p *Project) AddRuleTestFixture(ruleID string, name string, contents []byte
 	if err != nil {
 		return err
 	}
-	return p.testsDir.addRuleTestFixture(ruleDirName, safeName, contents)
+	return p.specsDir.addRuleSpec(ruleDirName, safeName, contents)
 }
 
-// RuleTestFixtures returns the test fixtures in the project. The returned
-// fixtures can be modified in-place, then the changes can be persisted by
-// calling WriteChanges on the project.
-func (p *Project) RuleTestFixtures() []*RuleTestFixture {
-	return p.testsDir.fixtures()
+// RuleSpecs returns the rule specs in the project. The returned fixtures can be
+// modified in-place, then the changes can be persisted by calling WriteChanges
+// on the project.
+func (p *Project) RuleSpecs() []*RuleSpec {
+	return p.specsDir.fixtures()
 }
 
 // AddRelation adds the given relation rule to the relations library for this
@@ -227,7 +227,7 @@ func FromDir(fsys afero.Fs, root string) (*Project, error) {
 	if err != nil {
 		return nil, err
 	}
-	tests, err := testsFromDir(fsys, root)
+	specs, err := specsFromDir(fsys, root)
 	if err != nil {
 		return nil, err
 	}
@@ -240,7 +240,7 @@ func FromDir(fsys afero.Fs, root string) (*Project, error) {
 		FS:           fsys,
 		rulesDir:     rules,
 		libDir:       lib,
-		testsDir:     tests,
+		specsDir:     specs,
 		manifestFile: manifest,
 	}
 	return p, nil

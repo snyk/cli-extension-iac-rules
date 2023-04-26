@@ -49,30 +49,30 @@ func TestProjectFromDir(t *testing.T) {
 	fsys := afero.NewMemMapFs()
 	fsys.MkdirAll("existing/lib", 0755)
 	fsys.MkdirAll("existing/rules/TEST_001", 0755)
-	fsys.MkdirAll("existing/tests/rules/TEST_001/inputs", 0755)
-	fsys.MkdirAll("existing/tests/rules/TEST_001/expected", 0755)
+	fsys.MkdirAll("existing/specs/rules/TEST_001/inputs", 0755)
+	fsys.MkdirAll("existing/specs/rules/TEST_001/expected", 0755)
 	afero.WriteFile(fsys, "existing/manifest.json", []byte(`{"name":"Test"}`), 0644)
 	afero.WriteFile(fsys, "existing/lib/relations.rego", testRelationsFile, 0644)
 	afero.WriteFile(fsys, "existing/rules/TEST_001/main.rego", testRule, 0644)
-	afero.WriteFile(fsys, "existing/tests/rules/TEST_001/inputs/infra.tf", []byte{}, 0644)
-	afero.WriteFile(fsys, "existing/tests/rules/TEST_001/expected/infra.json", []byte{}, 0644)
+	afero.WriteFile(fsys, "existing/specs/rules/TEST_001/inputs/infra.tf", []byte{}, 0644)
+	afero.WriteFile(fsys, "existing/specs/rules/TEST_001/expected/infra.json", []byte{}, 0644)
 	testCases := []struct {
-		name                 string
-		root                 string
-		expectedManifest     Manifest
-		expectedRules        []string
-		expectedTestFixtures []*RuleTestFixture
-		expectedRelations    []string
-		expectedMetadata     map[string]RuleMetadata
+		name              string
+		root              string
+		expectedManifest  Manifest
+		expectedRules     []string
+		expectedRuleSpecs []*RuleSpec
+		expectedRelations []string
+		expectedMetadata  map[string]RuleMetadata
 	}{
 		{
-			name:                 "project dir doesn't exist",
-			root:                 "nonexistent",
-			expectedManifest:     Manifest{},
-			expectedRules:        nil,
-			expectedTestFixtures: nil,
-			expectedRelations:    nil,
-			expectedMetadata:     map[string]RuleMetadata{},
+			name:              "project dir doesn't exist",
+			root:              "nonexistent",
+			expectedManifest:  Manifest{},
+			expectedRules:     nil,
+			expectedRuleSpecs: nil,
+			expectedRelations: nil,
+			expectedMetadata:  map[string]RuleMetadata{},
 		},
 		{
 			name: "existing project dir",
@@ -81,11 +81,11 @@ func TestProjectFromDir(t *testing.T) {
 				Name: "Test",
 			},
 			expectedRules: []string{"TEST_001"},
-			expectedTestFixtures: []*RuleTestFixture{
+			expectedRuleSpecs: []*RuleSpec{
 				{
 					name:     "infra.tf",
-					Input:    ExistingFile("existing/tests/rules/TEST_001/inputs/infra.tf"),
-					Expected: ExistingFile("existing/tests/rules/TEST_001/expected/infra.json"),
+					Input:    ExistingFile("existing/specs/rules/TEST_001/inputs/infra.tf"),
+					Expected: ExistingFile("existing/specs/rules/TEST_001/expected/infra.json"),
 				},
 			},
 			expectedRelations: []string{"aws_s3_bucket.logging"},
@@ -106,7 +106,7 @@ func TestProjectFromDir(t *testing.T) {
 			assert.NoError(t, err)
 			assert.Equal(t, tc.expectedManifest, p.Manifest())
 			assert.Equal(t, tc.expectedRules, p.ListRules())
-			assert.Equal(t, tc.expectedTestFixtures, p.RuleTestFixtures())
+			assert.Equal(t, tc.expectedRuleSpecs, p.RuleSpecs())
 			relations, err := p.RelationNames()
 			assert.NoError(t, err)
 			assert.Equal(t, tc.expectedRelations, relations)
@@ -159,45 +159,45 @@ func TestProjectWriteChanges(t *testing.T) {
 		assert.Equal(t, []string{"TEST_001"}, updated.ListRules())
 	})
 
-	t.Run("added rule test fixture", func(t *testing.T) {
+	t.Run("added rule spec", func(t *testing.T) {
 		// Initialize a new project
 		fsys := afero.NewMemMapFs()
 		p, err := FromDir(fsys, "new")
 		assert.NoError(t, err)
-		assert.Empty(t, p.RuleTestFixtures())
+		assert.Empty(t, p.RuleSpecs())
 
 		// Add a test fixture and write the changes to disk
-		p.AddRuleTestFixture("TEST_001", "infra.tf", []byte{})
+		p.AddRuleSpec("TEST_001", "infra.tf", []byte{})
 		err = p.WriteChanges()
 		assert.NoError(t, err)
 
 		// Re-read the project from disk and assert that the new test fixture is
 		// returned
-		expected := []*RuleTestFixture{
+		expected := []*RuleSpec{
 			{
 				name:  "infra.tf",
-				Input: ExistingFile("new/tests/rules/TEST_001/inputs/infra.tf"),
+				Input: ExistingFile("new/specs/rules/TEST_001/inputs/infra.tf"),
 			},
 		}
 		updated, err := FromDir(fsys, "new")
 		assert.NoError(t, err)
-		assert.Equal(t, expected, updated.RuleTestFixtures())
+		assert.Equal(t, expected, updated.RuleSpecs())
 	})
 
-	t.Run("updated rule test fixture", func(t *testing.T) {
+	t.Run("updated rule spec", func(t *testing.T) {
 		// Initialize a new project
 		fsys := afero.NewMemMapFs()
 		fsys.MkdirAll("new/tests/rules/TEST_001/inputs", 0755)
-		afero.WriteFile(fsys, "new/tests/rules/TEST_001/inputs/infra.tf", []byte{}, 0644)
+		afero.WriteFile(fsys, "new/specs/rules/TEST_001/inputs/infra.tf", []byte{}, 0644)
 		p, err := FromDir(fsys, "new")
 		assert.NoError(t, err)
 
 		// Update the test fixture with an expected output
-		fixtures := p.RuleTestFixtures()
-		assert.Equal(t, []*RuleTestFixture{
+		fixtures := p.RuleSpecs()
+		assert.Equal(t, []*RuleSpec{
 			{
 				name:  "infra.tf",
-				Input: ExistingFile("new/tests/rules/TEST_001/inputs/infra.tf"),
+				Input: ExistingFile("new/specs/rules/TEST_001/inputs/infra.tf"),
 			},
 		}, fixtures)
 		fixtures[0].UpdateExpected([]byte{})
@@ -206,16 +206,16 @@ func TestProjectWriteChanges(t *testing.T) {
 
 		// Re-read the project from disk and assert that the test fixture we
 		// updated in-place got written to disk when we called WriteChanges.
-		expected := []*RuleTestFixture{
+		expected := []*RuleSpec{
 			{
 				name:     "infra.tf",
-				Input:    ExistingFile("new/tests/rules/TEST_001/inputs/infra.tf"),
-				Expected: ExistingFile("new/tests/rules/TEST_001/expected/infra.json"),
+				Input:    ExistingFile("new/specs/rules/TEST_001/inputs/infra.tf"),
+				Expected: ExistingFile("new/specs/rules/TEST_001/expected/infra.json"),
 			},
 		}
 		updated, err := FromDir(fsys, "new")
 		assert.NoError(t, err)
-		assert.Equal(t, expected, updated.RuleTestFixtures())
+		assert.Equal(t, expected, updated.RuleSpecs())
 	})
 
 	t.Run("added relation", func(t *testing.T) {
