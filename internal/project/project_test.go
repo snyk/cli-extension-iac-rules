@@ -7,6 +7,44 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+var testRelationsFile = []byte(`package relations
+
+import data.snyk
+
+relations[info] {
+	info := snyk.relation_from_fields(
+		"aws_s3_bucket.logging",
+		{"aws_s3_bucket": ["id", "bucket"]},
+		{"aws_s3_bucket_logging": ["bucket"]},
+	)
+}
+`)
+
+var testRule = []byte(`package rules.TEST_001
+
+input_type := "tf"
+resource_type := "aws_s3_bucket"
+
+metadata := {
+	"id": "TEST-001",
+	"severity": "high",
+	"title": "S3 bucket has the word 'bucket' in its name",
+	"description": "The word 'bucket' is redundant in a bucket name. We already know it's a bucket.",
+	"product": [
+			"iac",
+			"cloud"
+	]
+}
+
+deny[info] {
+	contains(input.bucket, "bucket")
+	info := {
+		"resource": input
+	}
+}
+
+`)
+
 func TestProjectFromDir(t *testing.T) {
 	fsys := afero.NewMemMapFs()
 	fsys.MkdirAll("existing/lib", 0755)
@@ -14,77 +52,50 @@ func TestProjectFromDir(t *testing.T) {
 	fsys.MkdirAll("existing/tests/rules/TEST_001/inputs", 0755)
 	fsys.MkdirAll("existing/tests/rules/TEST_001/expected", 0755)
 	afero.WriteFile(fsys, "existing/manifest.json", []byte(`{"name":"Test"}`), 0644)
-	afero.WriteFile(fsys, "existing/lib/utils.rego", []byte{}, 0644)
-	afero.WriteFile(fsys, "existing/rules/TEST_001/main.rego", []byte{}, 0644)
+	afero.WriteFile(fsys, "existing/lib/relations.rego", testRelationsFile, 0644)
+	afero.WriteFile(fsys, "existing/rules/TEST_001/main.rego", testRule, 0644)
 	afero.WriteFile(fsys, "existing/tests/rules/TEST_001/inputs/infra.tf", []byte{}, 0644)
 	afero.WriteFile(fsys, "existing/tests/rules/TEST_001/expected/infra.json", []byte{}, 0644)
 	testCases := []struct {
-		name     string
-		root     string
-		expected *Project
+		name                 string
+		root                 string
+		expectedManifest     Manifest
+		expectedRules        []string
+		expectedTestFixtures []*RuleTestFixture
+		expectedRelations    []string
+		expectedMetadata     map[string]RuleMetadata
 	}{
 		{
-			name: "project dir doesn't exist",
-			root: "nonexistent",
-			expected: &Project{
-				Dir: NewDir("nonexistent"),
-				FS:  fsys,
-				rulesDir: &rulesDir{
-					Dir:   NewDir("nonexistent/rules"),
-					rules: map[string]*ruleDir{},
-				},
-				libDir: &libDir{
-					Dir: NewDir("nonexistent/lib"),
-				},
-				testsDir: &testsDir{
-					Dir:       NewDir("nonexistent/tests"),
-					ruleTests: map[string]*ruleTestDir{},
-				},
-				manifestFile: &manifestFile{
-					File: NewFile("nonexistent/manifest.json"),
-				},
-			},
+			name:                 "project dir doesn't exist",
+			root:                 "nonexistent",
+			expectedManifest:     Manifest{},
+			expectedRules:        nil,
+			expectedTestFixtures: nil,
+			expectedRelations:    nil,
+			expectedMetadata:     map[string]RuleMetadata{},
 		},
 		{
 			name: "existing project dir",
 			root: "existing",
-			expected: &Project{
-				Dir: ExistingDir("existing"),
-				FS:  fsys,
-				rulesDir: &rulesDir{
-					Dir: ExistingDir("existing/rules"),
-					rules: map[string]*ruleDir{
-						"TEST_001": {
-							Dir: ExistingDir("existing/rules/TEST_001"),
-							files: map[string]FSNode{
-								"main.rego": ExistingFile("existing/rules/TEST_001/main.rego"),
-							},
-						},
-					},
+			expectedManifest: Manifest{
+				Name: "Test",
+			},
+			expectedRules: []string{"TEST_001"},
+			expectedTestFixtures: []*RuleTestFixture{
+				{
+					name:     "infra.tf",
+					Input:    ExistingFile("existing/tests/rules/TEST_001/inputs/infra.tf"),
+					Expected: ExistingFile("existing/tests/rules/TEST_001/expected/infra.json"),
 				},
-				libDir: &libDir{
-					Dir: ExistingDir("existing/lib"),
-				},
-				testsDir: &testsDir{
-					Dir: ExistingDir("existing/tests"),
-					ruleTests: map[string]*ruleTestDir{
-						"TEST_001": {
-							Dir: ExistingDir("existing/tests/rules/TEST_001"),
-							fixtures: map[string]*RuleTestFixture{
-								"infra.tf": {
-									name:     "infra.tf",
-									Input:    ExistingFile("existing/tests/rules/TEST_001/inputs/infra.tf"),
-									Expected: ExistingFile("existing/tests/rules/TEST_001/expected/infra.json"),
-								},
-							},
-						},
-					},
-				},
-				manifestFile: &manifestFile{
-					File: ExistingFile("existing/manifest.json"),
-					manifest: Manifest{
-						Name: "Test",
-					},
+			},
+			expectedRelations: []string{"aws_s3_bucket.logging"},
+			expectedMetadata: map[string]RuleMetadata{
+				"TEST-001": {
+					ID:          "TEST-001",
+					Severity:    "high",
+					Title:       "S3 bucket has the word 'bucket' in its name",
+					Description: "The word 'bucket' is redundant in a bucket name. We already know it's a bucket.",
+					Product:     []string{"iac", "cloud"},
 				},
 			},
 		},
@@ -93,7 +104,15 @@ func TestProjectFromDir(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			p, err := FromDir(fsys, tc.root)
 			assert.NoError(t, err)
-			assert.Equal(t, tc.expected, p)
+			assert.Equal(t, tc.expectedManifest, p.Manifest())
+			assert.Equal(t, tc.expectedRules, p.ListRules())
+			assert.Equal(t, tc.expectedTestFixtures, p.RuleTestFixtures())
+			relations, err := p.RelationNames()
+			assert.NoError(t, err)
+			assert.Equal(t, tc.expectedRelations, relations)
+			metadata, err := p.RuleMetadata()
+			assert.NoError(t, err)
+			assert.Equal(t, tc.expectedMetadata, metadata)
 		})
 	}
 }
@@ -129,7 +148,8 @@ func TestProjectWriteChanges(t *testing.T) {
 		assert.Empty(t, p.ListRules())
 
 		// Add a rule and write the changes to disk
-		p.AddRule("TEST_001", "main.rego", []byte{})
+		err = p.AddRule("TEST_001", "main.rego", []byte{})
+		assert.NoError(t, err)
 		err = p.WriteChanges()
 		assert.NoError(t, err)
 
@@ -196,5 +216,34 @@ func TestProjectWriteChanges(t *testing.T) {
 		updated, err := FromDir(fsys, "new")
 		assert.NoError(t, err)
 		assert.Equal(t, expected, updated.RuleTestFixtures())
+	})
+
+	t.Run("added relation", func(t *testing.T) {
+		// Initialize a new project
+		fsys := afero.NewMemMapFs()
+		p, err := FromDir(fsys, "new")
+		assert.NoError(t, err)
+		relations, err := p.RelationNames()
+		assert.NoError(t, err)
+		assert.Empty(t, relations)
+
+		// Add a relation and write the changes to disk
+		err = p.AddRelation(`relation[info] {
+			info := snyk.relation_from_fields(
+                "aws_s3_bucket.logging",
+                {"aws_s3_bucket": ["id", "bucket"]},
+                {"aws_s3_bucket_logging": ["bucket"]},
+        	)
+		}`)
+		assert.NoError(t, err)
+		err = p.WriteChanges()
+		assert.NoError(t, err)
+
+		// Re-read the project from disk and assert that the new rule is listed
+		updated, err := FromDir(fsys, "new")
+		assert.NoError(t, err)
+		relations, err = updated.RelationNames()
+		assert.NoError(t, err)
+		assert.Equal(t, []string{"aws_s3_bucket.logging"}, relations)
 	})
 }
