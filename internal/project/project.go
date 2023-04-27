@@ -19,7 +19,7 @@ type Project struct {
 	FS           afero.Fs
 	rulesDir     *rulesDir
 	libDir       *libDir
-	specsDir     *specsDir
+	specDir      *specDir
 	manifestFile *manifestFile
 }
 
@@ -35,7 +35,7 @@ func (p *Project) WriteChanges() error {
 	if err := p.libDir.WriteChanges(p.FS); err != nil {
 		return err
 	}
-	if err := p.specsDir.WriteChanges(p.FS); err != nil {
+	if err := p.specDir.WriteChanges(p.FS); err != nil {
 		return err
 	}
 	if err := p.manifestFile.WriteChanges(p.FS); err != nil {
@@ -86,14 +86,14 @@ func (p *Project) AddRuleSpec(ruleID string, name string, contents []byte) error
 	if err != nil {
 		return err
 	}
-	return p.specsDir.addRuleSpec(ruleDirName, safeName, contents)
+	return p.specDir.addRuleSpec(ruleDirName, safeName, contents)
 }
 
 // RuleSpecs returns the rule specs in the project. The returned fixtures can be
 // modified in-place, then the changes can be persisted by calling WriteChanges
 // on the project.
 func (p *Project) RuleSpecs() []*RuleSpec {
-	return p.specsDir.fixtures()
+	return p.specDir.fixtures()
 }
 
 // AddRelation adds the given relation rule to the relations library for this
@@ -227,7 +227,7 @@ func FromDir(fsys afero.Fs, root string) (*Project, error) {
 	if err != nil {
 		return nil, err
 	}
-	specs, err := specsFromDir(fsys, root)
+	spec, err := specFromDir(fsys, root)
 	if err != nil {
 		return nil, err
 	}
@@ -240,7 +240,7 @@ func FromDir(fsys afero.Fs, root string) (*Project, error) {
 		FS:           fsys,
 		rulesDir:     rules,
 		libDir:       lib,
-		specsDir:     specs,
+		specDir:      spec,
 		manifestFile: manifest,
 	}
 	return p, nil
