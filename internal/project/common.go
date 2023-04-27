@@ -129,6 +129,14 @@ func (f *File) WriteChanges(fsys afero.Fs) error {
 	if f.exists && !f.dirty {
 		return nil
 	}
+	parent := filepath.Dir(f.path)
+	dir, err := DirFromPath(fsys, parent)
+	if err != nil {
+		return readPathError(parent, err)
+	}
+	if err := dir.WriteChanges(fsys); err != nil {
+		return err
+	}
 	if err := afero.WriteFile(fsys, f.path, f.pendingContents, filePermission); err != nil {
 		return pathError(f.path, ErrFailedToCreateFile, err)
 	}
@@ -198,7 +206,7 @@ func (d *Dir) WriteChanges(fsys afero.Fs) error {
 	if d.exists {
 		return nil
 	}
-	if err := fsys.Mkdir(d.path, directoryPermission); err != nil {
+	if err := fsys.MkdirAll(d.path, directoryPermission); err != nil {
 		return pathError(d.path, ErrFailedToCreateDir, err)
 	}
 	d.exists = true
@@ -215,7 +223,7 @@ func safeFilename(s string) (string, error) {
 	return replaceCharsRegex.ReplaceAllString(s, "_"), nil
 }
 
-func safePackageName(s string) (string, error) {
+func SafePackageName(s string) (string, error) {
 	safe, err := safeFilename(s)
 	if err != nil {
 		return "", err

@@ -7,53 +7,53 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestTestsFromDir(t *testing.T) {
+func TestSpecsFromDir(t *testing.T) {
 	fsys := afero.NewMemMapFs()
 	fsys.Mkdir("empty", 0755)
-	fsys.MkdirAll("existing/tests/rules/TEST_001/inputs/invalid_ec2", 0755)
-	fsys.MkdirAll("existing/tests/rules/TEST_001/expected", 0755)
-	afero.WriteFile(fsys, "existing/tests/rules/TEST_001/inputs/infra.tf", []byte{}, 0644)
-	afero.WriteFile(fsys, "existing/tests/rules/TEST_001/inputs/no_expected.tf", []byte{}, 0644)
-	afero.WriteFile(fsys, "existing/tests/rules/TEST_001/inputs/invalid_ec2/main.tf", []byte{}, 0644)
-	afero.WriteFile(fsys, "existing/tests/rules/TEST_001/inputs/invalid_ec2/module.tf", []byte{}, 0644)
-	afero.WriteFile(fsys, "existing/tests/rules/TEST_001/expected/infra.json", []byte{}, 0644)
-	afero.WriteFile(fsys, "existing/tests/rules/TEST_001/expected/invalid_ec2.json", []byte{}, 0644)
-	afero.WriteFile(fsys, "existing/tests/rules/ignored.txt", []byte{}, 0644)
+	fsys.MkdirAll("existing/specs/rules/TEST_001/inputs/invalid_ec2", 0755)
+	fsys.MkdirAll("existing/specs/rules/TEST_001/expected", 0755)
+	afero.WriteFile(fsys, "existing/specs/rules/TEST_001/inputs/infra.tf", []byte{}, 0644)
+	afero.WriteFile(fsys, "existing/specs/rules/TEST_001/inputs/no_expected.tf", []byte{}, 0644)
+	afero.WriteFile(fsys, "existing/specs/rules/TEST_001/inputs/invalid_ec2/main.tf", []byte{}, 0644)
+	afero.WriteFile(fsys, "existing/specs/rules/TEST_001/inputs/invalid_ec2/module.tf", []byte{}, 0644)
+	afero.WriteFile(fsys, "existing/specs/rules/TEST_001/expected/infra.json", []byte{}, 0644)
+	afero.WriteFile(fsys, "existing/specs/rules/TEST_001/expected/invalid_ec2.json", []byte{}, 0644)
+	afero.WriteFile(fsys, "existing/specs/rules/ignored.txt", []byte{}, 0644)
 	testCases := []struct {
 		name     string
 		root     string
-		expected *testsDir
+		expected *specsDir
 	}{
 		{
-			name: "tests dir doesn't exist",
+			name: "specs dir doesn't exist",
 			root: "empty",
-			expected: &testsDir{
-				Dir:       NewDir("empty/tests"),
-				ruleTests: map[string]*ruleTestDir{},
+			expected: &specsDir{
+				Dir:       NewDir("empty/specs"),
+				ruleSpecs: map[string]*ruleSpecsDir{},
 			},
 		},
 		{
-			name: "existing tests dir",
+			name: "existing specs dir",
 			root: "existing",
-			expected: &testsDir{
-				Dir: ExistingDir("existing/tests"),
-				ruleTests: map[string]*ruleTestDir{
+			expected: &specsDir{
+				Dir: ExistingDir("existing/specs"),
+				ruleSpecs: map[string]*ruleSpecsDir{
 					"TEST_001": {
-						Dir: ExistingDir("existing/tests/rules/TEST_001"),
-						fixtures: map[string]*RuleTestFixture{
+						Dir: ExistingDir("existing/specs/rules/TEST_001"),
+						fixtures: map[string]*RuleSpec{
 							"infra.tf": {
 								name:     "infra.tf",
-								Input:    ExistingFile("existing/tests/rules/TEST_001/inputs/infra.tf"),
-								Expected: ExistingFile("existing/tests/rules/TEST_001/expected/infra.json"),
+								Input:    ExistingFile("existing/specs/rules/TEST_001/inputs/infra.tf"),
+								Expected: ExistingFile("existing/specs/rules/TEST_001/expected/infra.json"),
 							},
 							"no_expected.tf": {
 								name:  "no_expected.tf",
-								Input: ExistingFile("existing/tests/rules/TEST_001/inputs/no_expected.tf"),
+								Input: ExistingFile("existing/specs/rules/TEST_001/inputs/no_expected.tf"),
 							},
 							"invalid_ec2": {
 								name:     "invalid_ec2",
-								Input:    ExistingDir("existing/tests/rules/TEST_001/inputs/invalid_ec2"),
-								Expected: ExistingFile("existing/tests/rules/TEST_001/expected/invalid_ec2.json"),
+								Input:    ExistingDir("existing/specs/rules/TEST_001/inputs/invalid_ec2"),
+								Expected: ExistingFile("existing/specs/rules/TEST_001/expected/invalid_ec2.json"),
 							},
 						},
 					},
@@ -63,51 +63,51 @@ func TestTestsFromDir(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			td, err := testsFromDir(fsys, tc.root)
+			td, err := specsFromDir(fsys, tc.root)
 			assert.NoError(t, err)
 			assert.Equal(t, tc.expected, td)
 		})
 	}
 }
 
-func TestTestsDirWriteChanges(t *testing.T) {
+func TestSpecsDirWriteChanges(t *testing.T) {
 	fsys := afero.NewMemMapFs()
 	fsys.Mkdir("new", 0755)
-	fsys.MkdirAll("existing/tests/rules/TEST_001/inputs/invalid_ec2", 0755)
-	fsys.MkdirAll("existing/tests/rules/TEST_001/expected", 0755)
-	afero.WriteFile(fsys, "existing/tests/rules/TEST_001/inputs/infra.tf", []byte{}, 0644)
-	afero.WriteFile(fsys, "existing/tests/rules/TEST_001/inputs/no_expected.tf", []byte{}, 0644)
-	afero.WriteFile(fsys, "existing/tests/rules/TEST_001/inputs/invalid_ec2/main.tf", []byte{}, 0644)
-	afero.WriteFile(fsys, "existing/tests/rules/TEST_001/inputs/invalid_ec2/module.tf", []byte{}, 0644)
-	afero.WriteFile(fsys, "existing/tests/rules/TEST_001/expected/infra.json", []byte{}, 0644)
-	afero.WriteFile(fsys, "existing/tests/rules/TEST_001/expected/invalid_ec2.json", []byte{}, 0644)
+	fsys.MkdirAll("existing/specs/rules/TEST_001/inputs/invalid_ec2", 0755)
+	fsys.MkdirAll("existing/specs/rules/TEST_001/expected", 0755)
+	afero.WriteFile(fsys, "existing/specs/rules/TEST_001/inputs/infra.tf", []byte{}, 0644)
+	afero.WriteFile(fsys, "existing/specs/rules/TEST_001/inputs/no_expected.tf", []byte{}, 0644)
+	afero.WriteFile(fsys, "existing/specs/rules/TEST_001/inputs/invalid_ec2/main.tf", []byte{}, 0644)
+	afero.WriteFile(fsys, "existing/specs/rules/TEST_001/inputs/invalid_ec2/module.tf", []byte{}, 0644)
+	afero.WriteFile(fsys, "existing/specs/rules/TEST_001/expected/infra.json", []byte{}, 0644)
+	afero.WriteFile(fsys, "existing/specs/rules/TEST_001/expected/invalid_ec2.json", []byte{}, 0644)
 	testCases := []struct {
 		name string
 		root string
-		td   *testsDir
+		td   *specsDir
 	}{
 		{
-			name: "new tests dir",
+			name: "new specs dir",
 			root: "new",
-			td: &testsDir{
-				Dir: NewDir("new/tests"),
-				ruleTests: map[string]*ruleTestDir{
+			td: &specsDir{
+				Dir: NewDir("new/specs"),
+				ruleSpecs: map[string]*ruleSpecsDir{
 					"TEST_001": {
-						Dir: NewDir("new/tests/rules/TEST_001"),
-						fixtures: map[string]*RuleTestFixture{
+						Dir: NewDir("new/specs/rules/TEST_001"),
+						fixtures: map[string]*RuleSpec{
 							"infra.tf": {
 								name:     "infra.tf",
-								Input:    NewFile("new/tests/rules/TEST_001/inputs/infra.tf"),
-								Expected: NewFile("new/tests/rules/TEST_001/expected/infra.json"),
+								Input:    NewFile("new/specs/rules/TEST_001/inputs/infra.tf"),
+								Expected: NewFile("new/specs/rules/TEST_001/expected/infra.json"),
 							},
 							"no_expected.tf": {
 								name:  "no_expected.tf",
-								Input: NewFile("new/tests/rules/TEST_001/inputs/no_expected.tf"),
+								Input: NewFile("new/specs/rules/TEST_001/inputs/no_expected.tf"),
 							},
 							"invalid_ec2": {
 								name:     "invalid_ec2",
-								Input:    NewDir("new/tests/rules/TEST_001/inputs/invalid_ec2"),
-								Expected: NewFile("new/tests/rules/TEST_001/expected/invalid_ec2.json"),
+								Input:    NewDir("new/specs/rules/TEST_001/inputs/invalid_ec2"),
+								Expected: NewFile("new/specs/rules/TEST_001/expected/invalid_ec2.json"),
 							},
 						},
 					},
@@ -115,27 +115,27 @@ func TestTestsDirWriteChanges(t *testing.T) {
 			},
 		},
 		{
-			name: "existing tests dir",
+			name: "existing specs dir",
 			root: "existing",
-			td: &testsDir{
-				Dir: ExistingDir("existing/tests"),
-				ruleTests: map[string]*ruleTestDir{
+			td: &specsDir{
+				Dir: ExistingDir("existing/specs"),
+				ruleSpecs: map[string]*ruleSpecsDir{
 					"TEST_001": {
-						Dir: ExistingDir("existing/tests/rules/TEST_001"),
-						fixtures: map[string]*RuleTestFixture{
+						Dir: ExistingDir("existing/specs/rules/TEST_001"),
+						fixtures: map[string]*RuleSpec{
 							"infra.tf": {
 								name:     "infra.tf",
-								Input:    ExistingFile("existing/tests/rules/TEST_001/inputs/infra.tf"),
-								Expected: ExistingFile("existing/tests/rules/TEST_001/expected/infra.json"),
+								Input:    ExistingFile("existing/specs/rules/TEST_001/inputs/infra.tf"),
+								Expected: ExistingFile("existing/specs/rules/TEST_001/expected/infra.json"),
 							},
 							"no_expected.tf": {
 								name:  "no_expected.tf",
-								Input: ExistingFile("existing/tests/rules/TEST_001/inputs/no_expected.tf"),
+								Input: ExistingFile("existing/specs/rules/TEST_001/inputs/no_expected.tf"),
 							},
 							"invalid_ec2": {
 								name:     "invalid_ec2",
-								Input:    ExistingDir("existing/tests/rules/TEST_001/inputs/invalid_ec2"),
-								Expected: ExistingFile("existing/tests/rules/TEST_001/expected/invalid_ec2.json"),
+								Input:    ExistingDir("existing/specs/rules/TEST_001/inputs/invalid_ec2"),
+								Expected: ExistingFile("existing/specs/rules/TEST_001/expected/invalid_ec2.json"),
 							},
 						},
 					},
@@ -147,7 +147,7 @@ func TestTestsDirWriteChanges(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			err := tc.td.WriteChanges(fsys)
 			assert.NoError(t, err)
-			output, err := testsFromDir(fsys, tc.root)
+			output, err := specsFromDir(fsys, tc.root)
 			assert.NoError(t, err)
 			assert.Equal(t, tc.td, output)
 		})

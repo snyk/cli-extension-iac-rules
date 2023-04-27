@@ -10,18 +10,18 @@ import (
 	"github.com/spf13/afero"
 )
 
-var ErrRuleTestFixtureAlreadyExists = errors.New("rule test fixture already exists")
+var ErrRuleSpecAlreadyExists = errors.New("rule spec already exists")
 
-// RuleTestFixture represents an input file or directory and an expected output
+// RuleSpec represents an input file or directory and an expected output
 // file.
-type RuleTestFixture struct {
+type RuleSpec struct {
 	name     string
 	Input    FSNode
 	Expected *File
 }
 
 // WriteChanges persists any changes to this fixture to disk.
-func (f *RuleTestFixture) WriteChanges(fsys afero.Fs) error {
+func (f *RuleSpec) WriteChanges(fsys afero.Fs) error {
 	if err := f.Input.WriteChanges(fsys); err != nil {
 		return err
 	}
@@ -34,22 +34,22 @@ func (f *RuleTestFixture) WriteChanges(fsys afero.Fs) error {
 }
 
 // UpdateExpected updates the expected output file for this fixture.
-func (f *RuleTestFixture) UpdateExpected(contents []byte) {
+func (f *RuleSpec) UpdateExpected(contents []byte) {
 	if f.Expected == nil {
 		f.Expected = NewFile(f.expectedPath())
 	}
 	f.Expected.UpdateContents(contents)
 }
 
-func (f *RuleTestFixture) expectedPath() string {
+func (f *RuleSpec) expectedPath() string {
 	noExt := strings.TrimSuffix(f.name, filepath.Ext(f.name))
 	parent := filepath.Dir(f.Input.Path())
 	expectedName := fmt.Sprintf("%s.json", noExt)
 	return filepath.Join(parent, "..", "expected", expectedName)
 }
 
-func ruleTestFixtureFromFileInfo(fsys afero.Fs, parent string, info fs.FileInfo) (*RuleTestFixture, error) {
-	fixture := &RuleTestFixture{
+func ruleSpecFromFileInfo(fsys afero.Fs, parent string, info fs.FileInfo) (*RuleSpec, error) {
+	fixture := &RuleSpec{
 		name:  info.Name(),
 		Input: FSNodeFromFileInfo(parent, info),
 	}
@@ -66,16 +66,16 @@ func ruleTestFixtureFromFileInfo(fsys afero.Fs, parent string, info fs.FileInfo)
 	return fixture, nil
 }
 
-type testsDir struct {
+type specsDir struct {
 	*Dir
-	ruleTests map[string]*ruleTestDir
+	ruleSpecs map[string]*ruleSpecsDir
 }
 
-func (t *testsDir) WriteChanges(fsys afero.Fs) error {
+func (t *specsDir) WriteChanges(fsys afero.Fs) error {
 	if err := t.Dir.WriteChanges(fsys); err != nil {
 		return err
 	}
-	for _, rt := range t.ruleTests {
+	for _, rt := range t.ruleSpecs {
 		if err := rt.WriteChanges(fsys); err != nil {
 			return err
 		}
@@ -83,9 +83,9 @@ func (t *testsDir) WriteChanges(fsys afero.Fs) error {
 	return nil
 }
 
-func (t *testsDir) fixtures() []*RuleTestFixture {
-	var fixtures []*RuleTestFixture
-	for _, r := range t.ruleTests {
+func (t *specsDir) fixtures() []*RuleSpec {
+	var fixtures []*RuleSpec
+	for _, r := range t.ruleSpecs {
 		for _, f := range r.fixtures {
 			fixtures = append(fixtures, f)
 		}
@@ -93,46 +93,46 @@ func (t *testsDir) fixtures() []*RuleTestFixture {
 	return fixtures
 }
 
-func (t *testsDir) addRuleTestDir(ruleDirName string) *ruleTestDir {
-	t.ruleTests[ruleDirName] = &ruleTestDir{
+func (t *specsDir) addRuleSpecsDir(ruleDirName string) *ruleSpecsDir {
+	t.ruleSpecs[ruleDirName] = &ruleSpecsDir{
 		Dir:      NewDir(filepath.Join(t.Path(), "rules", ruleDirName)),
-		fixtures: map[string]*RuleTestFixture{},
+		fixtures: map[string]*RuleSpec{},
 	}
-	return t.ruleTests[ruleDirName]
+	return t.ruleSpecs[ruleDirName]
 }
 
-func (t *testsDir) addRuleTestFixture(ruleDirName string, name string, contents []byte) error {
-	rt, ok := t.ruleTests[ruleDirName]
+func (t *specsDir) addRuleSpec(ruleDirName string, name string, contents []byte) error {
+	rt, ok := t.ruleSpecs[ruleDirName]
 	if !ok {
-		rt = t.addRuleTestDir(ruleDirName)
+		rt = t.addRuleSpecsDir(ruleDirName)
 	}
 	return rt.addFixture(name, contents)
 }
 
-func testsFromDir(fsys afero.Fs, root string) (*testsDir, error) {
-	testDir := filepath.Join(root, "tests")
-	dir, err := DirFromPath(fsys, testDir)
+func specsFromDir(fsys afero.Fs, root string) (*specsDir, error) {
+	specsPath := filepath.Join(root, "specs")
+	dir, err := DirFromPath(fsys, specsPath)
 	if err != nil {
 		return nil, err
 	}
 	if !dir.Exists() {
-		t := &testsDir{
+		t := &specsDir{
 			Dir:       dir,
-			ruleTests: map[string]*ruleTestDir{},
+			ruleSpecs: map[string]*ruleSpecsDir{},
 		}
 		return t, nil
 	}
-	entries, err := afero.ReadDir(fsys, testDir)
+	entries, err := afero.ReadDir(fsys, specsPath)
 	if err != nil {
-		return nil, readPathError(testDir, err)
+		return nil, readPathError(specsPath, err)
 	}
-	ruleTests := map[string]*ruleTestDir{}
+	ruleSpecs := map[string]*ruleSpecsDir{}
 	for _, e := range entries {
 		if !e.IsDir() {
 			continue
 		}
 		if e.Name() == "rules" {
-			rulesDir := filepath.Join(testDir, e.Name())
+			rulesDir := filepath.Join(specsPath, e.Name())
 			entries, err := afero.ReadDir(fsys, rulesDir)
 			if err != nil {
 				return nil, readPathError(rulesDir, err)
@@ -142,27 +142,27 @@ func testsFromDir(fsys afero.Fs, root string) (*testsDir, error) {
 					continue
 				}
 				name := e.Name()
-				rt, err := ruleTestFromDir(fsys, rulesDir, name)
+				rt, err := ruleSpecsFromDir(fsys, rulesDir, name)
 				if err != nil {
 					return nil, err
 				}
-				ruleTests[name] = rt
+				ruleSpecs[name] = rt
 			}
 		}
 	}
-	t := &testsDir{
+	t := &specsDir{
 		Dir:       dir,
-		ruleTests: ruleTests,
+		ruleSpecs: ruleSpecs,
 	}
 	return t, nil
 }
 
-type ruleTestDir struct {
+type ruleSpecsDir struct {
 	*Dir
-	fixtures map[string]*RuleTestFixture
+	fixtures map[string]*RuleSpec
 }
 
-func (t *ruleTestDir) WriteChanges(fsys afero.Fs) error {
+func (t *ruleSpecsDir) WriteChanges(fsys afero.Fs) error {
 	if err := t.Dir.WriteChanges(fsys); err != nil {
 		return err
 	}
@@ -175,27 +175,27 @@ func (t *ruleTestDir) WriteChanges(fsys afero.Fs) error {
 	return nil
 }
 
-func (t *ruleTestDir) addFixture(name string, contents []byte) error {
+func (t *ruleSpecsDir) addFixture(name string, contents []byte) error {
 	f, exists := t.fixtures[name]
 	if exists {
-		return fmt.Errorf("%w: %s", ErrRuleTestFixtureAlreadyExists, f.Input.Path())
+		return fmt.Errorf("%w: %s", ErrRuleSpecAlreadyExists, f.Input.Path())
 	}
 	input := NewFile(filepath.Join(t.path, "inputs", name))
 	input.UpdateContents(contents)
-	t.fixtures[name] = &RuleTestFixture{
+	t.fixtures[name] = &RuleSpec{
 		name:  name,
 		Input: input,
 	}
 	return nil
 }
 
-func ruleTestFromDir(fsys afero.Fs, parent string, name string) (*ruleTestDir, error) {
+func ruleSpecsFromDir(fsys afero.Fs, parent string, name string) (*ruleSpecsDir, error) {
 	path := filepath.Join(parent, name)
 	entries, err := afero.ReadDir(fsys, path)
 	if err != nil {
 		return nil, readPathError(path, err)
 	}
-	fixtures := map[string]*RuleTestFixture{}
+	fixtures := map[string]*RuleSpec{}
 	for _, e := range entries {
 		if !e.IsDir() {
 			continue
@@ -207,7 +207,7 @@ func ruleTestFromDir(fsys afero.Fs, parent string, name string) (*ruleTestDir, e
 				return nil, readPathError(inputsDir, err)
 			}
 			for _, e := range entries {
-				f, err := ruleTestFixtureFromFileInfo(fsys, inputsDir, e)
+				f, err := ruleSpecFromFileInfo(fsys, inputsDir, e)
 				if err != nil {
 					return nil, err
 				}
@@ -215,7 +215,7 @@ func ruleTestFromDir(fsys afero.Fs, parent string, name string) (*ruleTestDir, e
 			}
 		}
 	}
-	t := &ruleTestDir{
+	t := &ruleSpecsDir{
 		Dir:      ExistingDir(path),
 		fixtures: fixtures,
 	}

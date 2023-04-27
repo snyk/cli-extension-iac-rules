@@ -3,6 +3,7 @@ package project
 import (
 	"testing"
 
+	"github.com/open-policy-agent/opa/ast"
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
 )
@@ -11,6 +12,10 @@ func TestLibFromDir(t *testing.T) {
 	fsys := afero.NewMemMapFs()
 	fsys.Mkdir("empty", 0755)
 	fsys.MkdirAll("existing/lib", 0755)
+	afero.WriteFile(fsys, "existing/lib/relations.rego", []byte(relationsStub), 0644)
+
+	expectedModule, err := ast.ParseModule("existing/lib/relations.rego", relationsStub)
+	assert.NoError(t, err)
 
 	testCases := []struct {
 		name     string
@@ -22,13 +27,19 @@ func TestLibFromDir(t *testing.T) {
 			root: "existing",
 			expected: &libDir{
 				Dir: ExistingDir("existing/lib"),
+				relations: &relationsFile{
+					module: expectedModule,
+					lines:  3,
+					File:   ExistingFile("existing/lib/relations.rego"),
+				},
 			},
 		},
 		{
 			name: "non-existing lib dir",
 			root: "empty",
 			expected: &libDir{
-				Dir: NewDir("empty/lib"),
+				Dir:       NewDir("empty/lib"),
+				relations: newRelationsFile(NewFile("empty/lib/relations.rego")),
 			},
 		},
 	}
@@ -46,6 +57,9 @@ func TestLibWriteChanges(t *testing.T) {
 		fsys := afero.NewMemMapFs()
 		l := &libDir{
 			Dir: ExistingDir("lib"),
+			relations: &relationsFile{
+				File: ExistingFile("lib/relations.rego"),
+			},
 		}
 		err := l.WriteChanges(fsys)
 		assert.NoError(t, err)
@@ -53,18 +67,19 @@ func TestLibWriteChanges(t *testing.T) {
 		assert.NoError(t, err)
 		assert.False(t, exists)
 	})
-	t.Run("should create dir and gitkeep when dir does not exist", func(t *testing.T) {
+	t.Run("should create dir and relations when dir does not exist", func(t *testing.T) {
 		fsys := afero.NewMemMapFs()
 		l := &libDir{
-			Dir: NewDir("lib"),
+			Dir:       NewDir("lib"),
+			relations: newRelationsFile(NewFile("lib/relations.rego")),
 		}
 		err := l.WriteChanges(fsys)
 		assert.NoError(t, err)
 		dirExists, err := afero.DirExists(fsys, "lib")
 		assert.NoError(t, err)
 		assert.True(t, dirExists)
-		gitkeepExists, err := afero.Exists(fsys, "lib/.gitkeep")
+		relationsExists, err := afero.Exists(fsys, "lib/relations.rego")
 		assert.NoError(t, err)
-		assert.True(t, gitkeepExists)
+		assert.True(t, relationsExists)
 	})
 }
