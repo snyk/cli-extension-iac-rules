@@ -1,6 +1,6 @@
 module github.com/snyk/cli-extension-cloud
 
-go 1.19
+go 1.18
 
 require (
 	github.com/hashicorp/go-multierror v1.1.1
