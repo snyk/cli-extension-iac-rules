@@ -3,6 +3,7 @@ package push
 import (
 	"bytes"
 	"context"
+	"fmt"
 
 	"github.com/snyk/go-application-framework/pkg/configuration"
 	"github.com/snyk/go-application-framework/pkg/workflow"
@@ -17,6 +18,10 @@ var (
 	WorkflowID = workflow.NewWorkflowIdentifier("iac.push")
 )
 
+const (
+	FlagDelete = "delete"
+)
+
 func Workflow(
 	ictx workflow.InvocationContext,
 	_ []workflow.Data,
@@ -25,6 +30,7 @@ func Workflow(
 	logger := ictx.GetLogger()
 	config := ictx.GetConfiguration()
 	currentOrgID := config.GetString(configuration.ORGANIZATION)
+	del := ictx.GetConfiguration().GetBool(FlagDelete)
 
 	prj, err := project.FromDir(afero.NewOsFs(), ".")
 	if err != nil {
@@ -50,19 +56,37 @@ func Workflow(
 	)
 	manifest := prj.Manifest()
 	push := GetManifestPushByOrganization(manifest, currentOrgID)
-	if push == nil {
+	if push == nil && del {
+		return nil, fmt.Errorf("no rule bundle to delete")
+	} else if push == nil {
 		logger.Println("uploading new custom rules bundle")
 		customRulesID, err := client.CreateCustomRules(ctx, currentOrgID, targz.Bytes())
 		if err != nil {
 			return nil, err
 		}
 
-		manifest.Push = []project.ManifestPush{
-			{
-				CustomRulesID:  customRulesID,
-				OrganizationID: currentOrgID,
-			},
+		manifest.Push = append(manifest.Push, project.ManifestPush{
+			CustomRulesID:  customRulesID,
+			OrganizationID: currentOrgID,
+		})
+		prj.UpdateManifest(manifest)
+		if err := prj.WriteChanges(); err != nil {
+			return nil, err
 		}
+	} else if del {
+		logger.Println("deleting custom rules bundle", push.CustomRulesID)
+		err := client.DeleteCustomRules(ctx, push.OrganizationID, push.CustomRulesID)
+		if err != nil {
+			return nil, err
+		}
+
+		filtered := []project.ManifestPush{}
+		for _, p := range manifest.Push {
+			if p.OrganizationID != currentOrgID {
+				filtered = append(filtered, p)
+			}
+		}
+		manifest.Push = filtered
 		prj.UpdateManifest(manifest)
 		if err := prj.WriteChanges(); err != nil {
 			return nil, err

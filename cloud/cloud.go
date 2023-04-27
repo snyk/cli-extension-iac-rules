@@ -33,6 +33,20 @@ func Init(e workflow.Engine) error {
 		return fmt.Errorf("error while registering SBOM workflow: %w", err)
 	}
 
+	if err := InitPush(e); err != nil {
+		return fmt.Errorf("error while registering %s workflow: %w", push.WorkflowID, err)
+	}
+
+	return nil
+}
+
+func InitPush(e workflow.Engine) error {
+	flagset := pflag.NewFlagSet("snyk-cli-extension-cloud-push", pflag.ExitOnError)
+
+	flagset.Bool(push.FlagDelete, false, "Delete upstream rule bundle")
+
+	c := workflow.ConfigurationOptionsFromFlagset(flagset)
+
 	if _, err := e.Register(push.WorkflowID, c, push.Workflow); err != nil {
 		return fmt.Errorf("error while registering %s workflow: %w", push.WorkflowID, err)
 	}
