@@ -74,6 +74,29 @@ func (c *Client) UpdateCustomRules(
 	return parseResponse(rsp, http.StatusOK, &response)
 }
 
+func (c *Client) DeleteCustomRules(
+	ctx context.Context,
+	orgID string,
+	customRulesID string,
+) error {
+	url := fmt.Sprintf(
+		"%s/hidden/orgs/%s/cloud/custom_rules/%s?version=%s",
+		c.url,
+		orgID,
+		customRulesID,
+		version,
+	)
+	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, url, http.NoBody)
+	if err != nil {
+		return err
+	}
+	rsp, err := c.http.Do(req)
+	if err != nil {
+		return err
+	}
+	return parseResponse(rsp, http.StatusNoContent, nil)
+}
+
 func parseResponse(rsp *http.Response, expectedStatusCode int, expectedDocument interface{}) error {
 	body, err := io.ReadAll(rsp.Body)
 	defer rsp.Body.Close()
@@ -88,7 +111,10 @@ func parseResponse(rsp *http.Response, expectedStatusCode int, expectedDocument 
 		}
 		return fmt.Errorf("%s", errorDocumentToString(errorDoc))
 	}
-	return json.Unmarshal(body, expectedDocument)
+	if expectedDocument != nil {
+		return json.Unmarshal(body, expectedDocument)
+	}
+	return nil
 }
 
 func errorDocumentToString(err errorDocument) string {
