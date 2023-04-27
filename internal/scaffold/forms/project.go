@@ -34,7 +34,7 @@ func (p *ProjectForm) promptName() error {
 		return nil
 	}
 
-	prompt := textinput.New("Project name")
+	prompt := textinput.New("Project name:")
 	prompt.InitialValue = p.DefaultName
 	name, err := prompt.RunPrompt()
 	if err != nil {
