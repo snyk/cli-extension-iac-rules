@@ -66,12 +66,12 @@ func ruleSpecFromFileInfo(fsys afero.Fs, parent string, info fs.FileInfo) (*Rule
 	return fixture, nil
 }
 
-type specsDir struct {
+type specDir struct {
 	*Dir
 	ruleSpecs map[string]*ruleSpecsDir
 }
 
-func (t *specsDir) WriteChanges(fsys afero.Fs) error {
+func (t *specDir) WriteChanges(fsys afero.Fs) error {
 	if err := t.Dir.WriteChanges(fsys); err != nil {
 		return err
 	}
@@ -83,7 +83,7 @@ func (t *specsDir) WriteChanges(fsys afero.Fs) error {
 	return nil
 }
 
-func (t *specsDir) fixtures() []*RuleSpec {
+func (t *specDir) fixtures() []*RuleSpec {
 	var fixtures []*RuleSpec
 	for _, r := range t.ruleSpecs {
 		for _, f := range r.fixtures {
@@ -93,7 +93,7 @@ func (t *specsDir) fixtures() []*RuleSpec {
 	return fixtures
 }
 
-func (t *specsDir) addRuleSpecsDir(ruleDirName string) *ruleSpecsDir {
+func (t *specDir) addRuleSpecsDir(ruleDirName string) *ruleSpecsDir {
 	t.ruleSpecs[ruleDirName] = &ruleSpecsDir{
 		Dir:      NewDir(filepath.Join(t.Path(), "rules", ruleDirName)),
 		fixtures: map[string]*RuleSpec{},
@@ -101,7 +101,7 @@ func (t *specsDir) addRuleSpecsDir(ruleDirName string) *ruleSpecsDir {
 	return t.ruleSpecs[ruleDirName]
 }
 
-func (t *specsDir) addRuleSpec(ruleDirName string, name string, contents []byte) error {
+func (t *specDir) addRuleSpec(ruleDirName string, name string, contents []byte) error {
 	rt, ok := t.ruleSpecs[ruleDirName]
 	if !ok {
 		rt = t.addRuleSpecsDir(ruleDirName)
@@ -109,22 +109,22 @@ func (t *specsDir) addRuleSpec(ruleDirName string, name string, contents []byte)
 	return rt.addFixture(name, contents)
 }
 
-func specsFromDir(fsys afero.Fs, root string) (*specsDir, error) {
-	specsPath := filepath.Join(root, "specs")
-	dir, err := DirFromPath(fsys, specsPath)
+func specFromDir(fsys afero.Fs, root string) (*specDir, error) {
+	specPath := filepath.Join(root, "spec")
+	dir, err := DirFromPath(fsys, specPath)
 	if err != nil {
 		return nil, err
 	}
 	if !dir.Exists() {
-		t := &specsDir{
+		t := &specDir{
 			Dir:       dir,
 			ruleSpecs: map[string]*ruleSpecsDir{},
 		}
 		return t, nil
 	}
-	entries, err := afero.ReadDir(fsys, specsPath)
+	entries, err := afero.ReadDir(fsys, specPath)
 	if err != nil {
-		return nil, readPathError(specsPath, err)
+		return nil, readPathError(specPath, err)
 	}
 	ruleSpecs := map[string]*ruleSpecsDir{}
 	for _, e := range entries {
@@ -132,7 +132,7 @@ func specsFromDir(fsys afero.Fs, root string) (*specsDir, error) {
 			continue
 		}
 		if e.Name() == "rules" {
-			rulesDir := filepath.Join(specsPath, e.Name())
+			rulesDir := filepath.Join(specPath, e.Name())
 			entries, err := afero.ReadDir(fsys, rulesDir)
 			if err != nil {
 				return nil, readPathError(rulesDir, err)
@@ -150,7 +150,7 @@ func specsFromDir(fsys afero.Fs, root string) (*specsDir, error) {
 			}
 		}
 	}
-	t := &specsDir{
+	t := &specDir{
 		Dir:       dir,
 		ruleSpecs: ruleSpecs,
 	}
