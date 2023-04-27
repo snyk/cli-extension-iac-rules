@@ -38,7 +38,7 @@ func (p *Project) WriteChanges() error {
 
 // Manifest retrieves a copy of the project's manifest.
 func (p *Project) Manifest() Manifest {
-	return p.manifestFile.manifest
+	return p.manifestFile.manifest.copy()
 }
 
 // UpdateManifest updates the project's manifest.
