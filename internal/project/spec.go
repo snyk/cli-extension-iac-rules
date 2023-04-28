@@ -15,9 +15,10 @@ var ErrRuleSpecAlreadyExists = errors.New("rule spec already exists")
 // RuleSpec represents an input file or directory and an expected output
 // file.
 type RuleSpec struct {
-	name     string
-	Input    FSNode
-	Expected *File
+	name        string
+	RuleDirName string
+	Input       FSNode
+	Expected    *File
 }
 
 // WriteChanges persists any changes to this fixture to disk.
@@ -36,24 +37,25 @@ func (f *RuleSpec) WriteChanges(fsys afero.Fs) error {
 // UpdateExpected updates the expected output file for this fixture.
 func (f *RuleSpec) UpdateExpected(contents []byte) {
 	if f.Expected == nil {
-		f.Expected = NewFile(f.expectedPath())
+		f.Expected = NewFile(f.ExpectedPath())
 	}
 	f.Expected.UpdateContents(contents)
 }
 
-func (f *RuleSpec) expectedPath() string {
+func (f *RuleSpec) ExpectedPath() string {
 	noExt := strings.TrimSuffix(f.name, filepath.Ext(f.name))
 	parent := filepath.Dir(f.Input.Path())
 	expectedName := fmt.Sprintf("%s.json", noExt)
 	return filepath.Join(parent, "..", "expected", expectedName)
 }
 
-func ruleSpecFromFileInfo(fsys afero.Fs, parent string, info fs.FileInfo) (*RuleSpec, error) {
+func ruleSpecFromFileInfo(fsys afero.Fs, parent string, info fs.FileInfo, ruleDirName string) (*RuleSpec, error) {
 	fixture := &RuleSpec{
-		name:  info.Name(),
-		Input: FSNodeFromFileInfo(parent, info),
+		name:        info.Name(),
+		RuleDirName: ruleDirName,
+		Input:       FSNodeFromFileInfo(parent, info),
 	}
-	expectedPath := fixture.expectedPath()
+	expectedPath := fixture.ExpectedPath()
 	expectedFile, err := FileFromPath(fsys, expectedPath)
 	if err != nil {
 		return nil, err
@@ -207,7 +209,7 @@ func ruleSpecsFromDir(fsys afero.Fs, parent string, name string) (*ruleSpecsDir,
 				return nil, readPathError(inputsDir, err)
 			}
 			for _, e := range entries {
-				f, err := ruleSpecFromFileInfo(fsys, inputsDir, e)
+				f, err := ruleSpecFromFileInfo(fsys, inputsDir, e, name)
 				if err != nil {
 					return nil, err
 				}
