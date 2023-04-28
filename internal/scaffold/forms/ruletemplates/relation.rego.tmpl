@@ -1,0 +1,7 @@
+relations[info] {
+	info := snyk.relation_from_fields(
+		"{{.Name}}",
+		{"{{.LeftResourceType}}": [{{range .LeftAttributes}}"{{.}}",{{end}}]},
+		{"{{.RightResourceType}}": [{{range .RightAttributes}}"{{.}}",{{end}}]},
+	)
+}
