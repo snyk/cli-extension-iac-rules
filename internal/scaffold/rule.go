@@ -21,6 +21,7 @@ func RuleWorkflow(
 	if err != nil {
 		return nil, err
 	}
+	checkProject(proj, logger)
 	form := &forms.RuleForm{
 		Project: proj,
 		Logger:  logger,
