@@ -1,7 +1,6 @@
 package forms
 
 import (
-	"encoding/json"
 	"fmt"
 
 	"github.com/erikgeiser/promptkit/confirmation"
@@ -41,20 +40,12 @@ func (f *RelationForm) Run() error {
 		return err
 	}
 
-	leftAttributesJSON, err := json.Marshal(f.Fields.PrimaryAttributes)
-	if err != nil {
-		return err
-	}
-	rightAttributesJSON, err := json.Marshal(f.Fields.SecondaryAttributes)
-	if err != nil {
-		return err
-	}
 	relation, err := templateRelation(relationParams{
 		Name:              f.Fields.Name,
 		LeftResourceType:  f.Fields.PrimaryResourceType,
-		LeftAttributes:    string(leftAttributesJSON),
+		LeftAttributes:    f.Fields.PrimaryAttributes,
 		RightResourceType: f.Fields.SecondaryResourceType,
-		RightAttributes:   string(rightAttributesJSON),
+		RightAttributes:   f.Fields.SecondaryAttributes,
 	})
 	if err != nil {
 		return err

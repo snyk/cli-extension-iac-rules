@@ -15,9 +15,9 @@ var relationTemplate = template.Must(
 type relationParams struct {
 	Name              string
 	LeftResourceType  string
-	LeftAttributes    string
+	LeftAttributes    []string
 	RightResourceType string
-	RightAttributes   string
+	RightAttributes   []string
 }
 
 func templateRelation(params relationParams) (string, error) {
