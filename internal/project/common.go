@@ -230,3 +230,7 @@ func SafePackageName(s string) (string, error) {
 	}
 	return strings.ReplaceAll(safe, ".", "_"), nil
 }
+
+func RuleIDToSafeFileName(ruleID string) (string, error) {
+	return safeFilename(ruleID)
+}

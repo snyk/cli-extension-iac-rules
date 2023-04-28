@@ -6,6 +6,7 @@ require (
 	github.com/erikgeiser/promptkit v0.8.0
 	github.com/gertd/go-pluralize v0.2.1
 	github.com/hashicorp/go-multierror v1.1.1
+	github.com/hexops/gotextdiff v1.0.3
 	github.com/open-policy-agent/opa v0.51.0
 	github.com/rs/zerolog v1.29.1
 	github.com/snyk/go-application-framework v0.0.0-20230427110433-9dbd3b509e6f
@@ -33,7 +34,7 @@ require (
 	github.com/aymanbagabas/go-osc52 v1.2.1 // indirect
 	github.com/bgentry/go-netrc v0.0.0-20140422174119-9fd32a8b3d3d // indirect
 	github.com/bmatcuk/doublestar v1.3.4 // indirect
-	github.com/bmatcuk/doublestar/v4 v4.0.2 // indirect
+	github.com/bmatcuk/doublestar/v4 v4.6.0 // indirect
 	github.com/charmbracelet/bubbles v0.14.0 // indirect
 	github.com/charmbracelet/bubbletea v0.23.1 // indirect
 	github.com/charmbracelet/lipgloss v0.6.0 // indirect
@@ -75,7 +76,7 @@ require (
 	github.com/klauspost/compress v1.15.11 // indirect
 	github.com/lucasb-eyer/go-colorful v1.2.0 // indirect
 	github.com/magiconair/properties v1.8.6 // indirect
-	github.com/mattn/go-colorable v0.1.12 // indirect
+	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.17 // indirect
 	github.com/mattn/go-localereader v0.0.1 // indirect
 	github.com/mattn/go-runewidth v0.0.14 // indirect

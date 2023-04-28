@@ -83,9 +83,10 @@ func TestProjectFromDir(t *testing.T) {
 			expectedRules: []string{"TEST_001"},
 			expectedRuleSpecs: []*RuleSpec{
 				{
-					name:     "infra.tf",
-					Input:    ExistingFile("existing/spec/rules/TEST_001/inputs/infra.tf"),
-					Expected: ExistingFile("existing/spec/rules/TEST_001/expected/infra.json"),
+					name:        "infra.tf",
+					RuleDirName: "TEST_001",
+					Input:       ExistingFile("existing/spec/rules/TEST_001/inputs/infra.tf"),
+					Expected:    ExistingFile("existing/spec/rules/TEST_001/expected/infra.json"),
 				},
 			},
 			expectedRelations: []string{"aws_s3_bucket.logging"},
@@ -176,8 +177,9 @@ func TestProjectWriteChanges(t *testing.T) {
 		// returned
 		expected := []*RuleSpec{
 			{
-				name:  "infra.tf",
-				Input: ExistingFile("new/spec/rules/TEST_001/inputs/infra.tf"),
+				name:        "infra.tf",
+				RuleDirName: "TEST_001",
+				Input:       ExistingFile("new/spec/rules/TEST_001/inputs/infra.tf"),
 			},
 		}
 		updated, err := FromDir(fsys, "new")
@@ -197,8 +199,9 @@ func TestProjectWriteChanges(t *testing.T) {
 		fixtures := p.RuleSpecs()
 		assert.Equal(t, []*RuleSpec{
 			{
-				name:  "infra.tf",
-				Input: ExistingFile("new/spec/rules/TEST_001/inputs/infra.tf"),
+				name:        "infra.tf",
+				RuleDirName: "TEST_001",
+				Input:       ExistingFile("new/spec/rules/TEST_001/inputs/infra.tf"),
 			},
 		}, fixtures)
 		fixtures[0].UpdateExpected([]byte{})
@@ -209,9 +212,10 @@ func TestProjectWriteChanges(t *testing.T) {
 		// updated in-place got written to disk when we called WriteChanges.
 		expected := []*RuleSpec{
 			{
-				name:     "infra.tf",
-				Input:    ExistingFile("new/spec/rules/TEST_001/inputs/infra.tf"),
-				Expected: ExistingFile("new/spec/rules/TEST_001/expected/infra.json"),
+				name:        "infra.tf",
+				RuleDirName: "TEST_001",
+				Input:       ExistingFile("new/spec/rules/TEST_001/inputs/infra.tf"),
+				Expected:    ExistingFile("new/spec/rules/TEST_001/expected/infra.json"),
 			},
 		}
 		updated, err := FromDir(fsys, "new")

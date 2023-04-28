@@ -105,7 +105,7 @@ func (p *Project) AddRelation(contents string) error {
 // RelationNames returns the names of all relations defined in the project.
 func (p *Project) RelationNames() ([]string, error) {
 	ctx := context.Background()
-	eng, err := p.engine(ctx)
+	eng, err := p.Engine(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -132,7 +132,7 @@ func (p *Project) RelationNames() ([]string, error) {
 // project.
 func (p *Project) RuleMetadata() (map[string]RuleMetadata, error) {
 	ctx := context.Background()
-	eng, err := p.engine(ctx)
+	eng, err := p.Engine(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -160,7 +160,7 @@ func (p *Project) RuleMetadata() (map[string]RuleMetadata, error) {
 // InputTypeForRule returns the input for the given rule ID
 func (p *Project) InputTypeForRule(ruleID string) (string, error) {
 	ctx := context.Background()
-	eng, err := p.engine(ctx)
+	eng, err := p.Engine(ctx)
 	if err != nil {
 		return "", err
 	}
@@ -192,7 +192,7 @@ func (p *Project) InputTypeForRule(ruleID string) (string, error) {
 	return inputType, nil
 }
 
-func (p *Project) engine(ctx context.Context) (*engine.Engine, error) {
+func (p *Project) Engine(ctx context.Context) (*engine.Engine, error) {
 	fsys := afero.NewIOFS(p.FS)
 	var providers []data.Provider
 	if p.libDir.Exists() {
