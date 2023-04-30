@@ -5,6 +5,7 @@ import (
 
 	"github.com/erikgeiser/promptkit/confirmation"
 	"github.com/erikgeiser/promptkit/textinput"
+	"github.com/rs/zerolog"
 	"github.com/snyk/cli-extension-cloud/internal/project"
 )
 
@@ -20,6 +21,7 @@ type (
 	RelationForm struct {
 		Project *project.Project
 		Fields  RelationFields
+		Logger  *zerolog.Logger
 	}
 )
 
@@ -50,7 +52,12 @@ func (f *RelationForm) Run() error {
 	if err != nil {
 		return err
 	}
-	return f.Project.AddRelation(relation)
+	path, err := f.Project.AddRelation(relation)
+	if err != nil {
+		return err
+	}
+	f.Logger.Info().Msgf("Adding relation '%s' to %s", f.Fields.Name, path)
+	return nil
 }
 
 func (f *RelationForm) promptName() error {

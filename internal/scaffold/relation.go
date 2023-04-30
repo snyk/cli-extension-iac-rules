@@ -16,11 +16,15 @@ func RelationWorkflow(
 	ictx workflow.InvocationContext,
 	_ []workflow.Data,
 ) ([]workflow.Data, error) {
+	logger := ictx.GetEnhancedLogger()
 	proj, err := project.FromDir(afero.NewOsFs(), ".")
 	if err != nil {
 		return nil, err
 	}
-	form := &forms.RelationForm{Project: proj}
+	form := &forms.RelationForm{
+		Project: proj,
+		Logger:  logger,
+	}
 	if err := form.Run(); err != nil {
 		return nil, err
 	}

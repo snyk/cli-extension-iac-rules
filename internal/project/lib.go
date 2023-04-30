@@ -28,7 +28,7 @@ func (l *libDir) WriteChanges(fsys afero.Fs) error {
 	return nil
 }
 
-func (l *libDir) addRelation(contents string) error {
+func (l *libDir) addRelation(contents string) (string, error) {
 	return l.relations.addRelation(contents)
 }
 
@@ -101,14 +101,17 @@ func relationsFileFromDir(fsys afero.Fs, parent string) (*relationsFile, error) 
 	return r, nil
 }
 
-func (r *relationsFile) addRelation(contents string) error {
+func (r *relationsFile) addRelation(contents string) (string, error) {
 	rule, err := ast.ParseRule(contents)
 	if err != nil {
-		return err
+		return "", err
 	}
 	rule.Location.Row = r.lines + 1
 	r.module.Rules = append(r.module.Rules, rule)
-	return r.UpdateContents()
+	if err := r.UpdateContents(); err != nil {
+		return "", err
+	}
+	return r.Path(), nil
 }
 
 func (r *relationsFile) UpdateContents() error {
