@@ -1,0 +1,10 @@
+---
+apiVersion: ""
+kind: ""
+metadata:
+  name: valid
+---
+apiVersion: ""
+kind: ""
+metadata:
+  name: invalid
