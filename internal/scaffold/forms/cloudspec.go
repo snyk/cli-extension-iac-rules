@@ -56,7 +56,6 @@ func (f *CloudSpecForm) Run() error {
 		return err
 	}
 	filename := addExtIfNeeded(f.Name, ".json")
-	f.Project.AddRuleSpec(f.RuleID, filename, b)
 	path, err := f.Project.AddRuleSpec(f.RuleID, filename, b)
 	if err != nil {
 		return err
