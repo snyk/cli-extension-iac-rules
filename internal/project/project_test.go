@@ -233,14 +233,15 @@ func TestProjectWriteChanges(t *testing.T) {
 		assert.Empty(t, relations)
 
 		// Add a relation and write the changes to disk
-		err = p.AddRelation(`relation[info] {
+		relationsPath, err := p.AddRelation(`relation[info] {
 			info := snyk.relation_from_fields(
-                "aws_s3_bucket.logging",
-                {"aws_s3_bucket": ["id", "bucket"]},
-                {"aws_s3_bucket_logging": ["bucket"]},
-        	)
+				"aws_s3_bucket.logging",
+				{"aws_s3_bucket": ["id", "bucket"]},
+				{"aws_s3_bucket_logging": ["bucket"]},
+			)
 		}`)
 		assert.NoError(t, err)
+		assert.Equal(t, "new/lib/relations.rego", relationsPath)
 		err = p.WriteChanges()
 		assert.NoError(t, err)
 

@@ -98,7 +98,7 @@ func (p *Project) RuleSpecs() []*RuleSpec {
 
 // AddRelation adds the given relation rule to the relations library for this
 // project.
-func (p *Project) AddRelation(contents string) error {
+func (p *Project) AddRelation(contents string) (string, error) {
 	return p.libDir.addRelation(contents)
 }
 

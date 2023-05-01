@@ -18,6 +18,7 @@ func ProjectWorkflow(
 	ictx workflow.InvocationContext,
 	_ []workflow.Data,
 ) ([]workflow.Data, error) {
+	logger := ictx.GetEnhancedLogger()
 	wd, err := os.Getwd()
 	if err != nil {
 		return nil, err
@@ -33,6 +34,7 @@ func ProjectWorkflow(
 	form := &forms.ProjectForm{
 		Project:     proj,
 		DefaultName: defaultName,
+		Logger:      logger,
 	}
 	if err := form.Run(); err != nil {
 		return nil, err

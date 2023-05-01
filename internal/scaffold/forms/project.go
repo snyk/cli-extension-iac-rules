@@ -2,6 +2,7 @@ package forms
 
 import (
 	"github.com/erikgeiser/promptkit/textinput"
+	"github.com/rs/zerolog"
 	"github.com/snyk/cli-extension-cloud/internal/project"
 )
 
@@ -14,6 +15,7 @@ type (
 		Project     *project.Project
 		DefaultName string
 		Fields      ProjectFields
+		Logger      *zerolog.Logger
 	}
 )
 
@@ -26,6 +28,7 @@ func (p *ProjectForm) Run() error {
 	manifest.Name = p.Fields.Name
 
 	p.Project.UpdateManifest(manifest)
+	p.Logger.Info().Msgf("Initializing or updating project '%s'", p.Fields.Name)
 	return nil
 }
 
