@@ -1,2 +1,4 @@
 .scratch
 .vscode
+develop
+!cmd/develop
