@@ -9,7 +9,7 @@ require (
 	github.com/hexops/gotextdiff v1.0.3
 	github.com/open-policy-agent/opa v0.51.0
 	github.com/rs/zerolog v1.29.1
-	github.com/snyk/go-application-framework v0.0.0-20230427110433-9dbd3b509e6f
+	github.com/snyk/go-application-framework v0.0.0-20230502084119-2f982ec5943d
 	github.com/snyk/policy-engine v0.21.1
 	github.com/spf13/afero v1.9.2
 	github.com/spf13/pflag v1.0.5
@@ -66,6 +66,7 @@ require (
 	github.com/hashicorp/hcl/v2 v2.16.0 // indirect
 	github.com/hashicorp/terraform-registry-address v0.1.0 // indirect
 	github.com/hashicorp/terraform-svchost v0.0.0-20200729002733-f050f53b9734 // indirect
+	github.com/inconshreveable/mousetrap v1.1.0 // indirect
 	github.com/jcmturner/aescts/v2 v2.0.0 // indirect
 	github.com/jcmturner/dnsutils/v2 v2.0.0 // indirect
 	github.com/jcmturner/gofork v1.7.6 // indirect
@@ -96,6 +97,7 @@ require (
 	github.com/rivo/uniseg v0.4.3 // indirect
 	github.com/snyk/go-httpauth v0.0.0-20230328170530-1af63c87b650 // indirect
 	github.com/spf13/cast v1.5.0 // indirect
+	github.com/spf13/cobra v1.7.0 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/viper v1.13.0 // indirect
 	github.com/subosito/gotenv v1.4.1 // indirect
