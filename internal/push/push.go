@@ -9,20 +9,33 @@ import (
 	"github.com/snyk/go-application-framework/pkg/workflow"
 	"github.com/snyk/policy-engine/pkg/bundle"
 	"github.com/spf13/afero"
+	"github.com/spf13/pflag"
 
 	"github.com/snyk/cli-extension-cloud/internal/project"
 	"github.com/snyk/cli-extension-cloud/internal/service"
 )
 
-var (
-	WorkflowID = workflow.NewWorkflowIdentifier("iac.push")
-)
+var ()
 
 const (
-	FlagDelete = "delete"
+	flagDelete = "delete"
 )
 
-func Workflow(
+func RegisterWorkflows(e workflow.Engine) error {
+	workflowID := workflow.NewWorkflowIdentifier("iac.push")
+	flagset := pflag.NewFlagSet("snyk-cli-extension-iac-push", pflag.ExitOnError)
+
+	flagset.Bool(flagDelete, false, "Delete upstream rule bundle")
+
+	c := workflow.ConfigurationOptionsFromFlagset(flagset)
+
+	if _, err := e.Register(workflowID, c, pushWorkflow); err != nil {
+		return fmt.Errorf("error while registering %s workflow: %w", workflowID, err)
+	}
+	return nil
+}
+
+func pushWorkflow(
 	ictx workflow.InvocationContext,
 	_ []workflow.Data,
 ) ([]workflow.Data, error) {
@@ -30,7 +43,7 @@ func Workflow(
 	logger := ictx.GetLogger()
 	config := ictx.GetConfiguration()
 	currentOrgID := config.GetString(configuration.ORGANIZATION)
-	del := ictx.GetConfiguration().GetBool(FlagDelete)
+	del := ictx.GetConfiguration().GetBool(flagDelete)
 
 	prj, err := project.FromDir(afero.NewOsFs(), ".")
 	if err != nil {
@@ -55,7 +68,7 @@ func Workflow(
 		config.GetString(configuration.API_URL),
 	)
 	manifest := prj.Manifest()
-	push := GetManifestPushByOrganization(manifest, currentOrgID)
+	push := getManifestPushByOrganization(manifest, currentOrgID)
 	if push == nil && del {
 		return nil, fmt.Errorf("no rule bundle to delete")
 	} else if push == nil {
@@ -102,7 +115,7 @@ func Workflow(
 	return []workflow.Data{}, nil
 }
 
-func GetManifestPushByOrganization(manifest project.Manifest, organizationID string) *project.ManifestPush {
+func getManifestPushByOrganization(manifest project.Manifest, organizationID string) *project.ManifestPush {
 	for _, push := range manifest.Push {
 		if push.OrganizationID == organizationID {
 			return &push

@@ -20,19 +20,30 @@ import (
 	"github.com/snyk/policy-engine/pkg/postprocess"
 	"github.com/snyk/policy-engine/pkg/rego/test"
 	"github.com/spf13/afero"
+	"github.com/spf13/pflag"
 
 	"github.com/snyk/cli-extension-cloud/internal/project"
 )
 
-var (
-	WorkflowID = workflow.NewWorkflowIdentifier("iac.spec")
-)
-
 const (
-	FlagUpdateExpected = "update-expected"
+	flagUpdateExpected = "update-expected"
 )
 
-func Workflow(
+func RegisterWorkflows(e workflow.Engine) error {
+	workflowID := workflow.NewWorkflowIdentifier("iac.spec")
+	flagset := pflag.NewFlagSet("snyk-cli-extension-iac-spec", pflag.ExitOnError)
+
+	flagset.Bool(flagUpdateExpected, false, "Updated expected JSON files based on actual results")
+
+	c := workflow.ConfigurationOptionsFromFlagset(flagset)
+
+	if _, err := e.Register(workflowID, c, specWorkflow); err != nil {
+		return fmt.Errorf("error while registering %s workflow: %w", workflowID, err)
+	}
+	return nil
+}
+
+func specWorkflow(
 	ictx workflow.InvocationContext,
 	_ []workflow.Data,
 ) ([]workflow.Data, error) {
@@ -40,7 +51,7 @@ func Workflow(
 	logger := ictx.GetLogger()
 	verbose := ictx.GetConfiguration().GetBool(configuration.DEBUG)
 
-	updateExpected := ictx.GetConfiguration().GetBool(FlagUpdateExpected)
+	updateExpected := ictx.GetConfiguration().GetBool(flagUpdateExpected)
 	fixturesFailed := 0
 	fixturesTested := 0
 
