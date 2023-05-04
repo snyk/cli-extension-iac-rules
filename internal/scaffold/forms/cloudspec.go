@@ -22,7 +22,7 @@ import (
 	"github.com/erikgeiser/promptkit/selection"
 	"github.com/erikgeiser/promptkit/textinput"
 	"github.com/rs/zerolog"
-	"github.com/snyk/cli-extension-cloud/internal/project"
+	"github.com/snyk/cli-extension-iac-rules/internal/project"
 	"github.com/snyk/policy-engine/pkg/input"
 	"github.com/snyk/policy-engine/pkg/input/cloudapi"
 )

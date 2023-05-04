@@ -19,8 +19,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/snyk/cli-extension-cloud/internal/project"
-	"github.com/snyk/cli-extension-cloud/internal/scaffold/forms"
+	"github.com/snyk/cli-extension-iac-rules/internal/project"
+	"github.com/snyk/cli-extension-iac-rules/internal/scaffold/forms"
 	"github.com/snyk/go-application-framework/pkg/workflow"
 	"github.com/spf13/afero"
 	"github.com/spf13/pflag"

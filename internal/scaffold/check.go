@@ -16,7 +16,7 @@ package scaffold
 
 import (
 	"github.com/rs/zerolog"
-	"github.com/snyk/cli-extension-cloud/internal/project"
+	"github.com/snyk/cli-extension-iac-rules/internal/project"
 )
 
 func checkProject(proj *project.Project, logger *zerolog.Logger) {

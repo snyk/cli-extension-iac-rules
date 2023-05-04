@@ -12,14 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package cloud
+package iacrules
 
 import (
-	"github.com/snyk/cli-extension-cloud/internal/scaffold"
+	"github.com/snyk/cli-extension-iac-rules/internal/scaffold"
 	"github.com/snyk/go-application-framework/pkg/workflow"
 
-	"github.com/snyk/cli-extension-cloud/internal/push"
-	"github.com/snyk/cli-extension-cloud/internal/spec"
+	"github.com/snyk/cli-extension-iac-rules/internal/push"
+	"github.com/snyk/cli-extension-iac-rules/internal/spec"
 )
 
 func Init(e workflow.Engine) error {

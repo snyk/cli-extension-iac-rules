@@ -25,7 +25,7 @@ import (
 	pluralize "github.com/gertd/go-pluralize"
 	"github.com/open-policy-agent/opa/ast"
 	"github.com/rs/zerolog"
-	"github.com/snyk/cli-extension-cloud/internal/project"
+	"github.com/snyk/cli-extension-iac-rules/internal/project"
 )
 
 type (

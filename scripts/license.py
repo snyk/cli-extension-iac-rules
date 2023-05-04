@@ -113,6 +113,6 @@ def license_tree(dir):
                 license_file(path, "#")
 
 
-license_tree("cloud")
+license_tree("iacrules")
 license_tree("cmd")
 license_tree("internal")

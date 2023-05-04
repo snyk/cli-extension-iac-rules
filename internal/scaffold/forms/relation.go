@@ -20,7 +20,7 @@ import (
 	"github.com/erikgeiser/promptkit/confirmation"
 	"github.com/erikgeiser/promptkit/textinput"
 	"github.com/rs/zerolog"
-	"github.com/snyk/cli-extension-cloud/internal/project"
+	"github.com/snyk/cli-extension-iac-rules/internal/project"
 )
 
 type (
