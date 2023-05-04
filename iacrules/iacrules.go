@@ -12,18 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package project
+package iacrules
 
-// RuleMetadata contains all of the rule metadata fields that are supported for
-// custom rules.
-type RuleMetadata struct {
-	ID           string   `json:"id"`
-	Severity     string   `json:"severity"`
-	Title        string   `json:"title"`
-	Description  string   `json:"description"`
-	Product      []string `json:"product"`
-	Category     string   `json:"category,omitempty"`
-	Labels       []string `json:"labels,omitempty"`
-	Platform     []string `json:"platform,omitempty"`
-	ServiceGroup string   `json:"service_group,omitempty"`
+import (
+	"github.com/snyk/cli-extension-iac-rules/internal/scaffold"
+	"github.com/snyk/go-application-framework/pkg/workflow"
+
+	"github.com/snyk/cli-extension-iac-rules/internal/push"
+	"github.com/snyk/cli-extension-iac-rules/internal/spec"
+)
+
+func Init(e workflow.Engine) error {
+	if err := scaffold.RegisterWorkflows(e); err != nil {
+		return err
+	}
+	if err := spec.RegisterWorkflows(e); err != nil {
+		return err
+	}
+	if err := push.RegisterWorkflows(e); err != nil {
+		return err
+	}
+	return nil
 }

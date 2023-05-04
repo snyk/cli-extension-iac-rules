@@ -1,4 +1,4 @@
-module github.com/snyk/cli-extension-cloud
+module github.com/snyk/cli-extension-iac-rules
 
 go 1.18
 
