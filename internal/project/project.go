@@ -209,17 +209,20 @@ func (p *Project) InputTypeForRule(ruleID string) (string, error) {
 	return inputType, nil
 }
 
-func (p *Project) Engine(ctx context.Context) (*engine.Engine, error) {
+func (p *Project) Providers() (providers []data.Provider) {
 	fsys := afero.NewIOFS(p.FS)
-	var providers []data.Provider
 	if p.libDir.Exists() {
 		providers = append(providers, data.FSProvider(fsys, p.libDir.Path()))
 	}
 	if p.rulesDir.Exists() {
 		providers = append(providers, data.FSProvider(fsys, p.rulesDir.Path()))
 	}
+	return
+}
+
+func (p *Project) Engine(ctx context.Context) (*engine.Engine, error) {
 	eng := engine.NewEngine(ctx, &engine.EngineOptions{
-		Providers: providers,
+		Providers: p.Providers(),
 	})
 	if len(eng.InitializationErrors) > 0 {
 		return nil, &multierror.Error{

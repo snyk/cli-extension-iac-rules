@@ -27,9 +27,7 @@ import (
 	"github.com/hexops/gotextdiff/span"
 	"github.com/snyk/go-application-framework/pkg/configuration"
 	"github.com/snyk/go-application-framework/pkg/workflow"
-	"github.com/snyk/policy-engine/pkg/data"
 	"github.com/snyk/policy-engine/pkg/engine"
-	"github.com/snyk/policy-engine/pkg/input"
 	"github.com/snyk/policy-engine/pkg/models"
 	"github.com/snyk/policy-engine/pkg/postprocess"
 	"github.com/snyk/policy-engine/pkg/rego/test"
@@ -37,6 +35,7 @@ import (
 	"github.com/spf13/pflag"
 
 	"github.com/snyk/cli-extension-iac-rules/internal/project"
+	"github.com/snyk/cli-extension-iac-rules/internal/utils"
 )
 
 const (
@@ -134,12 +133,12 @@ func specWorkflow(
 	logger.Println(fixturesTested, "spec files tested")
 
 	result, err := test.Test(ctx, test.Options{
-		Providers: []data.Provider{
-			data.LocalProvider("rules"),
-			data.LocalProvider("lib"),
-		},
+		Providers: prj.Providers(),
 		Verbose: verbose,
 	})
+	if err != nil {
+		return nil, err
+	}
 	if !result.Passed {
 		return nil, fmt.Errorf("tests failed")
 	}
@@ -162,32 +161,17 @@ func makeRuleDirNameToRuleID(eng *engine.Engine, ctx context.Context) (map[strin
 }
 
 func runEngine(eng *engine.Engine, ruleID string, path string) ([]models.RuleResult, error) {
-	detector, err := input.DetectorByInputTypes(input.Types{input.Auto})
-	if err != nil {
-		return nil, err
-	}
-	detector = input.NewMultiDetector(cloudScanDetector{}, detector)
-	loader := input.NewLoader(detector)
-	fsys := afero.OsFs{}
-	detectable, err := input.NewDetectable(fsys, path)
-	if err != nil {
-		return nil, err
-	}
-	_, err = loader.Load(detectable, input.DetectOptions{})
+	singleInput, err := utils.LoadSingleInput(path)
 	if err != nil {
 		return nil, err
 	}
 	ctx := context.Background()
-	states := loader.ToStates()
-	if len(states) != 1 {
-		return nil, fmt.Errorf("internal error: expected a single input but got %d", len(states))
-	}
-
+	inputs := []models.State{singleInput.State}
 	results := eng.Eval(ctx, &engine.EvalOptions{
-		Inputs:  states,
+		Inputs:  inputs,
 		RuleIDs: []string{ruleID},
 	})
-	postprocess.AddSourceLocs(results, loader)
+	postprocess.AddSourceLocs(results, singleInput.Loader)
 
 	if len(results.Results) != 1 || len(results.Results[0].RuleResults) != 1 {
 		return nil, fmt.Errorf("internal error: expected a single rule result")

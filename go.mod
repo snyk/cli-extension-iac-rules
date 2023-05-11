@@ -10,7 +10,7 @@ require (
 	github.com/open-policy-agent/opa v0.51.0
 	github.com/rs/zerolog v1.29.1
 	github.com/snyk/go-application-framework v0.0.0-20230502084119-2f982ec5943d
-	github.com/snyk/policy-engine v0.21.1
+	github.com/snyk/policy-engine v0.22.0
 	github.com/spf13/afero v1.9.2
 	github.com/spf13/pflag v1.0.5
 	github.com/stretchr/testify v1.8.1
@@ -89,8 +89,10 @@ require (
 	github.com/muesli/cancelreader v0.2.2 // indirect
 	github.com/muesli/reflow v0.3.0 // indirect
 	github.com/muesli/termenv v0.13.0 // indirect
+	github.com/olekukonko/tablewriter v0.0.5 // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
 	github.com/pelletier/go-toml/v2 v2.0.5 // indirect
+	github.com/peterh/liner v1.2.2 // indirect
 	github.com/pkg/browser v0.0.0-20210911075715-681adbf594b8 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/rcrowley/go-metrics v0.0.0-20201227073835-cf1acfcdf475 // indirect
