@@ -20,6 +20,7 @@ import (
 	"github.com/erikgeiser/promptkit/textinput"
 	"github.com/rs/zerolog"
 	"github.com/snyk/cli-extension-iac-rules/internal/project"
+	"github.com/snyk/policy-engine/pkg/input"
 )
 
 type (
@@ -162,14 +163,15 @@ func (f *RuleForm) promptProduct() error {
 		return err
 	}
 
-	var products []string
 	switch choice {
-	case "iac", "cloud":
-		products = []string{choice}
+	case "iac":
+		f.Fields.Product = []string{choice}
+	case "cloud":
+		f.Fields.Product = []string{choice}
+		f.Fields.InputType = input.CloudScan.Name
 	case "both":
-		products = []string{"iac", "cloud"}
+		f.Fields.Product = []string{"iac", "cloud"}
 	}
-	f.Fields.Product = products
 	return nil
 }
 
@@ -178,7 +180,11 @@ func (f *RuleForm) promptInputType() error {
 		return nil
 	}
 
-	prompt := selection.New("Input type:", inputTypes())
+	choices := allInputTypes()
+	if len(f.Fields.Product) == 1 && f.Fields.Product[0] == "iac" {
+		choices = iacInputTypes()
+	}
+	prompt := selection.New("Input type:", choices)
 	inputType, err := prompt.RunPrompt()
 	if err != nil {
 		return err

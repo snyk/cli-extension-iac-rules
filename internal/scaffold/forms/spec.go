@@ -132,13 +132,13 @@ func (f *SpecForm) promptInputType() error {
 	defaultInputType, err := f.Project.InputTypeForRule(f.Fields.RuleID)
 	if err == nil && defaultInputType != "" {
 		choices = []string{defaultInputType}
-		for _, t := range inputTypes() {
+		for _, t := range allInputTypes() {
 			if t != defaultInputType {
 				choices = append(choices, t)
 			}
 		}
 	} else {
-		choices = inputTypes()
+		choices = allInputTypes()
 	}
 	prompt := selection.New("Input type:", choices)
 	choice, err := prompt.RunPrompt()
