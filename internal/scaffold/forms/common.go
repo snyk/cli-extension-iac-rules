@@ -20,10 +20,19 @@ type Form interface {
 	Run() error
 }
 
-func inputTypes() []string {
+func allInputTypes() []string {
 	return []string{
 		input.Terraform.Name,
 		input.CloudScan.Name,
+		input.Kubernetes.Name,
+		input.CloudFormation.Name,
+		input.Arm.Name,
+	}
+}
+
+func iacInputTypes() []string {
+	return []string{
+		input.Terraform.Name,
 		input.Kubernetes.Name,
 		input.CloudFormation.Name,
 		input.Arm.Name,
