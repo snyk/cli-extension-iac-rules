@@ -156,6 +156,7 @@ func (f *MultiResourceRuleForm) promptRelation() error {
 	case addNewRelation:
 		form := &RelationForm{
 			Project: f.Project,
+			Logger:  f.Logger,
 			Fields: RelationFields{
 				PrimaryResourceType:   f.Fields.PrimaryResourceType,
 				SecondaryResourceType: f.Fields.SecondaryResourceType,
