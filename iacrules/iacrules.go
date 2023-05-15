@@ -19,6 +19,7 @@ import (
 	"github.com/snyk/go-application-framework/pkg/workflow"
 
 	"github.com/snyk/cli-extension-iac-rules/internal/push"
+	"github.com/snyk/cli-extension-iac-rules/internal/repl"
 	"github.com/snyk/cli-extension-iac-rules/internal/spec"
 )
 
@@ -30,6 +31,9 @@ func Init(e workflow.Engine) error {
 		return err
 	}
 	if err := push.RegisterWorkflows(e); err != nil {
+		return err
+	}
+	if err := repl.RegisterWorkflows(e); err != nil {
 		return err
 	}
 	return nil
