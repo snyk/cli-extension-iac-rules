@@ -14,4 +14,4 @@ metadata:
 spec:
     type: library
     lifecycle: production
-    owner: "cloud-dev-ex"
+    owner: "cloud-context"
