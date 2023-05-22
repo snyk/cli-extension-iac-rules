@@ -34,9 +34,9 @@ const (
 )
 
 func RegisterWorkflows(e workflow.Engine) error {
-	workflowID := workflow.NewWorkflowIdentifier("iac.repl")
+	workflowID := workflow.NewWorkflowIdentifier("iac.rules.repl")
 
-	flagset := pflag.NewFlagSet("snyk-cli-extension-iac-repl", pflag.ExitOnError)
+	flagset := pflag.NewFlagSet("snyk-cli-extension-iac-rules-repl", pflag.ExitOnError)
 	flagset.StringSlice(flagInit, []string{}, "Run commands on REPL initialization")
 	flagset.String(flagInput, "", "Input IaC file")
 

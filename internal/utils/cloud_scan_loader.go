@@ -22,7 +22,7 @@ import (
 )
 
 // cloudScanDetector is a simple Detector to load cloud scan files.  These
-// are usually generated using `snyk iac scaffold spec`.
+// are usually generated using `snyk iac rules init`.
 type cloudScanDetector struct {
 }
 

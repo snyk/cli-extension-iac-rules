@@ -12,34 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package scaffold
+package init
 
 import (
+	"github.com/rs/zerolog"
 	"github.com/snyk/cli-extension-iac-rules/internal/project"
-	"github.com/snyk/cli-extension-iac-rules/internal/scaffold/forms"
-	"github.com/snyk/go-application-framework/pkg/workflow"
-	"github.com/spf13/afero"
 )
 
-func RuleWorkflow(
-	ictx workflow.InvocationContext,
-	_ []workflow.Data,
-) ([]workflow.Data, error) {
-	logger := ictx.GetEnhancedLogger()
-	proj, err := project.FromDir(afero.NewOsFs(), ".")
+func checkProject(proj *project.Project, logger *zerolog.Logger) {
+	// Test if we'll be able to query the project for Rule IDs and such
+	_, err := proj.RuleMetadata()
 	if err != nil {
-		return nil, err
+		logger.Warn().Msgf("Found errors in this project. This tool is still usable, but we'll be unable to populate some menus: %s", err.Error())
 	}
-	checkProject(proj, logger)
-	form := &forms.RuleForm{
-		Project: proj,
-		Logger:  logger,
-	}
-	if err := form.Run(); err != nil {
-		return nil, err
-	}
-	if err := proj.WriteChanges(); err != nil {
-		return nil, err
-	}
-	return []workflow.Data{}, nil
 }

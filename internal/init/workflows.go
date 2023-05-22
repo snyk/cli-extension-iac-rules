@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package scaffold
+package init
 
 import (
 	"fmt"
@@ -22,54 +22,53 @@ import (
 	"github.com/spf13/pflag"
 )
 
-type ScaffoldChoice string
+type TypeChoice string
 
 const (
-	ScaffoldProject  = "project"
-	ScaffoldRule     = "rule"
-	ScaffoldSpec     = "rule spec"
-	ScaffoldRelation = "relation"
+	TypeProject  = "project"
+	TypeRule     = "rule"
+	TypeSpec     = "rule spec"
+	TypeRelation = "relation"
 )
 
-func ScaffoldChoices() []ScaffoldChoice {
-	return []ScaffoldChoice{
-		ScaffoldProject,
-		ScaffoldRule,
-		ScaffoldSpec,
-		ScaffoldRelation,
+func TypeChoices() []TypeChoice {
+	return []TypeChoice{
+		TypeProject,
+		TypeRule,
+		TypeSpec,
+		TypeRelation,
 	}
 }
 
-var ScaffoldWorkflowID = workflow.NewWorkflowIdentifier("iac.scaffold")
-
 func RegisterWorkflows(e workflow.Engine) error {
-	flagset := pflag.NewFlagSet("snyk-cli-extension-iac-scaffold", pflag.ExitOnError)
+	workflowID := workflow.NewWorkflowIdentifier("iac.rules.init")
+	flagset := pflag.NewFlagSet("snyk-cli-extension-iac-rules-init", pflag.ExitOnError)
 	c := workflow.ConfigurationOptionsFromFlagset(flagset)
-	if _, err := e.Register(ScaffoldWorkflowID, c, ScaffoldWorkflow); err != nil {
-		return fmt.Errorf("error while registering 'iac scaffold' workflow: %w", err)
+	if _, err := e.Register(workflowID, c, initWorkflow); err != nil {
+		return fmt.Errorf("error while registering %s workflow: %w", workflowID, err)
 	}
 	return nil
 }
 
-func ScaffoldWorkflow(
+func initWorkflow(
 	ictx workflow.InvocationContext,
 	input []workflow.Data,
 ) ([]workflow.Data, error) {
-	prompt := selection.New("What do you want to scaffold?", ScaffoldChoices())
+	prompt := selection.New("What do you want to initialize?", TypeChoices())
 	choice, err := prompt.RunPrompt()
 	if err != nil {
 		return nil, err
 	}
 	switch choice {
-	case ScaffoldProject:
+	case TypeProject:
 		return ProjectWorkflow(ictx, input)
-	case ScaffoldRule:
+	case TypeRule:
 		return RuleWorkflow(ictx, input)
-	case ScaffoldSpec:
+	case TypeSpec:
 		return SpecWorkflow(ictx, input)
-	case ScaffoldRelation:
+	case TypeRelation:
 		return RelationWorkflow(ictx, input)
 	default: // Should not happen
-		return nil, fmt.Errorf("nothing to scaffold")
+		return nil, fmt.Errorf("nothing to initialize")
 	}
 }

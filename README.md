@@ -18,17 +18,11 @@ the standalone binary.
 
 ## Workflows
 
-- `snyk iac push`
+- `snyk iac rules push`
   - Builds and pushes a custom rules project to the Snyk API
   - Can also be used to delete a custom rules project from the Snyk API
-- `snyk iac scaffold`
-  - Prompts to initialize a custom rules project
-- `snyk iac scaffold relation`
-  - Prompts to initialize a relation in a custom rules project
-- `snyk iac scaffold rule`
-  - Prompts to initialize a rule in a custom rules project
-- `snyk iac scaffold spec`
-  - Prompts to initialize a spec in a custom rules project
-- `snyk iac spec`
+- `snyk iac rules init`
+  - Prompts to initialize a custom rules project, relation, rule, or spec
+- `snyk iac test`
   - Tests all rules in the project against their specs
   - Also used to generate the expected output for specs

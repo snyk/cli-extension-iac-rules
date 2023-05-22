@@ -15,19 +15,19 @@
 package iacrules
 
 import (
-	"github.com/snyk/cli-extension-iac-rules/internal/scaffold"
 	"github.com/snyk/go-application-framework/pkg/workflow"
 
+	initWorkflow "github.com/snyk/cli-extension-iac-rules/internal/init"
 	"github.com/snyk/cli-extension-iac-rules/internal/push"
 	"github.com/snyk/cli-extension-iac-rules/internal/repl"
-	"github.com/snyk/cli-extension-iac-rules/internal/spec"
+	"github.com/snyk/cli-extension-iac-rules/internal/test"
 )
 
 func Init(e workflow.Engine) error {
-	if err := scaffold.RegisterWorkflows(e); err != nil {
+	if err := initWorkflow.RegisterWorkflows(e); err != nil {
 		return err
 	}
-	if err := spec.RegisterWorkflows(e); err != nil {
+	if err := test.RegisterWorkflows(e); err != nil {
 		return err
 	}
 	if err := push.RegisterWorkflows(e); err != nil {
