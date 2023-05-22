@@ -1,6 +1,10 @@
 name: test
 
-on: [push]
+on:
+  workflow_run:
+    workflows: [ Snyk Detect Secrets ]
+    types:
+      - completed
 
 jobs:
   test:
