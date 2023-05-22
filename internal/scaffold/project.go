@@ -15,7 +15,6 @@
 package scaffold
 
 import (
-	"fmt"
 	"os"
 	"path/filepath"
 
@@ -23,10 +22,7 @@ import (
 	"github.com/snyk/cli-extension-iac-rules/internal/scaffold/forms"
 	"github.com/snyk/go-application-framework/pkg/workflow"
 	"github.com/spf13/afero"
-	"github.com/spf13/pflag"
 )
-
-var ProjectWorkflowID = workflow.NewWorkflowIdentifier("iac.scaffold")
 
 func ProjectWorkflow(
 	ictx workflow.InvocationContext,
@@ -57,13 +53,4 @@ func ProjectWorkflow(
 		return nil, err
 	}
 	return []workflow.Data{}, nil
-}
-
-func RegisterProjectWorkflow(e workflow.Engine) error {
-	flagset := pflag.NewFlagSet("snyk-cli-extension-iac-scaffold", pflag.ExitOnError)
-	c := workflow.ConfigurationOptionsFromFlagset(flagset)
-	if _, err := e.Register(ProjectWorkflowID, c, ProjectWorkflow); err != nil {
-		return fmt.Errorf("error while registering 'iac scaffold' workflow: %w", err)
-	}
-	return nil
 }

@@ -15,18 +15,13 @@
 package scaffold
 
 import (
-	"fmt"
-
 	"github.com/snyk/cli-extension-iac-rules/internal/project"
 	"github.com/snyk/cli-extension-iac-rules/internal/scaffold/forms"
 	"github.com/snyk/go-application-framework/pkg/configuration"
 	"github.com/snyk/go-application-framework/pkg/workflow"
 	"github.com/snyk/policy-engine/pkg/input/cloudapi"
 	"github.com/spf13/afero"
-	"github.com/spf13/pflag"
 )
-
-var SpecWorkflowID = workflow.NewWorkflowIdentifier("iac.scaffold.spec")
 
 func SpecWorkflow(
 	ictx workflow.InvocationContext,
@@ -59,13 +54,4 @@ func SpecWorkflow(
 		return nil, err
 	}
 	return []workflow.Data{}, nil
-}
-
-func RegisterSpecWorkflow(e workflow.Engine) error {
-	flagset := pflag.NewFlagSet("snyk-cli-extension-iac-scaffold-spec", pflag.ExitOnError)
-	c := workflow.ConfigurationOptionsFromFlagset(flagset)
-	if _, err := e.Register(SpecWorkflowID, c, SpecWorkflow); err != nil {
-		return fmt.Errorf("error while registering 'iac scaffold spec' workflow: %w", err)
-	}
-	return nil
 }
