@@ -36,8 +36,8 @@ const (
 )
 
 func RegisterWorkflows(e workflow.Engine) error {
-	workflowID := workflow.NewWorkflowIdentifier("iac.push")
-	flagset := pflag.NewFlagSet("snyk-cli-extension-iac-push", pflag.ExitOnError)
+	workflowID := workflow.NewWorkflowIdentifier("iac.rules.push")
+	flagset := pflag.NewFlagSet("snyk-cli-extension-iac-rules-push", pflag.ExitOnError)
 
 	flagset.Bool(flagDelete, false, "Delete upstream rule bundle")
 

@@ -18,7 +18,7 @@ the standalone binary.
 
 ## Workflows
 
-- `snyk iac push`
+- `snyk iac rules push`
   - Builds and pushes a custom rules project to the Snyk API
   - Can also be used to delete a custom rules project from the Snyk API
 - `snyk iac scaffold`
