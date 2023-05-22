@@ -12,39 +12,27 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package scaffold
+package init
 
 import (
-	"os"
-	"path/filepath"
-
+	"github.com/snyk/cli-extension-iac-rules/internal/init/forms"
 	"github.com/snyk/cli-extension-iac-rules/internal/project"
-	"github.com/snyk/cli-extension-iac-rules/internal/scaffold/forms"
 	"github.com/snyk/go-application-framework/pkg/workflow"
 	"github.com/spf13/afero"
 )
 
-func ProjectWorkflow(
+func RelationWorkflow(
 	ictx workflow.InvocationContext,
 	_ []workflow.Data,
 ) ([]workflow.Data, error) {
 	logger := ictx.GetEnhancedLogger()
-	wd, err := os.Getwd()
-	if err != nil {
-		return nil, err
-	}
 	proj, err := project.FromDir(afero.NewOsFs(), ".")
 	if err != nil {
 		return nil, err
 	}
-	defaultName := filepath.Base(wd)
-	if name := proj.Manifest().Name; name != "" {
-		defaultName = name
-	}
-	form := &forms.ProjectForm{
-		Project:     proj,
-		DefaultName: defaultName,
-		Logger:      logger,
+	form := &forms.RelationForm{
+		Project: proj,
+		Logger:  logger,
 	}
 	if err := form.Run(); err != nil {
 		return nil, err
