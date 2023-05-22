@@ -29,6 +29,6 @@ the standalone binary.
   - Prompts to initialize a rule in a custom rules project
 - `snyk iac scaffold spec`
   - Prompts to initialize a spec in a custom rules project
-- `snyk iac spec`
+- `snyk iac rules test`
   - Tests all rules in the project against their specs
   - Also used to generate the expected output for specs

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package spec
+package test
 
 import (
 	"context"
@@ -43,20 +43,20 @@ const (
 )
 
 func RegisterWorkflows(e workflow.Engine) error {
-	workflowID := workflow.NewWorkflowIdentifier("iac.spec")
-	flagset := pflag.NewFlagSet("snyk-cli-extension-iac-spec", pflag.ExitOnError)
+	workflowID := workflow.NewWorkflowIdentifier("iac.rules.test")
+	flagset := pflag.NewFlagSet("snyk-cli-extension-iac-rules-test", pflag.ExitOnError)
 
 	flagset.Bool(flagUpdateExpected, false, "Updated expected JSON files based on actual results")
 
 	c := workflow.ConfigurationOptionsFromFlagset(flagset)
 
-	if _, err := e.Register(workflowID, c, specWorkflow); err != nil {
+	if _, err := e.Register(workflowID, c, testWorkflow); err != nil {
 		return fmt.Errorf("error while registering %s workflow: %w", workflowID, err)
 	}
 	return nil
 }
 
-func specWorkflow(
+func testWorkflow(
 	ictx workflow.InvocationContext,
 	_ []workflow.Data,
 ) ([]workflow.Data, error) {
@@ -134,7 +134,7 @@ func specWorkflow(
 
 	result, err := test.Test(ctx, test.Options{
 		Providers: prj.Providers(),
-		Verbose: verbose,
+		Verbose:   verbose,
 	})
 	if err != nil {
 		return nil, err
