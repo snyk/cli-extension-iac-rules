@@ -24,7 +24,7 @@ import (
 	"strings"
 )
 
-const version = "2022-12-21~beta"
+const version = "2023-05-22~experimental"
 
 type Client struct {
 	http *http.Client
@@ -40,7 +40,7 @@ func NewClient(http *http.Client, url string) *Client {
 
 func (c *Client) CreateCustomRules(ctx context.Context, orgID string, targz []byte) (string, error) {
 	url := fmt.Sprintf(
-		"%s/hidden/orgs/%s/cloud/custom_rules?version=%s",
+		"%s/rest/orgs/%s/cloud/rule_bundles?version=%s",
 		c.url,
 		orgID,
 		version,
@@ -69,7 +69,7 @@ func (c *Client) UpdateCustomRules(
 	targz []byte,
 ) error {
 	url := fmt.Sprintf(
-		"%s/hidden/orgs/%s/cloud/custom_rules/%s?version=%s",
+		"%s/rest/orgs/%s/cloud/rule_bundles/%s?version=%s",
 		c.url,
 		orgID,
 		customRulesID,
@@ -94,7 +94,7 @@ func (c *Client) DeleteCustomRules(
 	customRulesID string,
 ) error {
 	url := fmt.Sprintf(
-		"%s/hidden/orgs/%s/cloud/custom_rules/%s?version=%s",
+		"%s/rest/orgs/%s/cloud/rule_bundles/%s?version=%s",
 		c.url,
 		orgID,
 		customRulesID,
