@@ -18,6 +18,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"os"
 
 	"github.com/snyk/go-application-framework/pkg/configuration"
 	"github.com/snyk/go-application-framework/pkg/workflow"
@@ -126,6 +127,7 @@ func pushWorkflow(
 		}
 	}
 
+	fmt.Fprintln(os.Stderr, "Successfully uploaded custom rule bundle.")
 	return []workflow.Data{}, nil
 }
 
