@@ -61,8 +61,9 @@ func testWorkflow(
 	_ []workflow.Data,
 ) ([]workflow.Data, error) {
 	ctx := context.Background()
-	logger := ictx.GetLogger()
 	verbose := ictx.GetConfiguration().GetBool(configuration.DEBUG)
+
+	fmt.Fprintln(os.Stderr, "Running specs...")
 
 	updateExpected := ictx.GetConfiguration().GetBool(flagUpdateExpected)
 	fixturesFailed := 0
@@ -129,9 +130,11 @@ func testWorkflow(
 		fixturesTested += 1
 	}
 
-	logger.Println(fixturesFailed, "spec files failed")
-	logger.Println(fixturesTested, "spec files tested")
+	fmt.Fprintf(os.Stderr, "%d/%d specs passed.\n", fixturesTested-fixturesFailed, fixturesTested)
 
+	// As well as the "specs" (snapshot tests) we also use policy-engine/test to
+	// run custom rego tests.
+	fmt.Fprintln(os.Stderr, "Running rego tests...")
 	result, err := test.Test(ctx, test.Options{
 		Providers: prj.Providers(),
 		Verbose:   verbose,
@@ -139,7 +142,8 @@ func testWorkflow(
 	if err != nil {
 		return nil, err
 	}
-	if !result.Passed {
+
+	if fixturesFailed > 0 || !result.Passed {
 		return nil, fmt.Errorf("tests failed")
 	}
 
