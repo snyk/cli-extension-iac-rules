@@ -26,6 +26,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	cmd.SilenceUsage = true
 	if err := cmd.Execute(); err != nil {
 		log.Fatal(err)
 	}
