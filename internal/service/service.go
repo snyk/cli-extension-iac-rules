@@ -121,7 +121,11 @@ func parseResponse(rsp *http.Response, expectedStatusCode int, expectedDocument 
 	if rsp.StatusCode != expectedStatusCode {
 		var errorDoc errorDocument
 		if err := json.Unmarshal(body, &errorDoc); err != nil {
-			return fmt.Errorf("response %d: %s", rsp.StatusCode, err)
+			// If the error is not encoded as JSON, that is less important a detail to
+			// surface to the user than the actual content of the error. Notably, this
+			// can occur when cerberus bounces the request, as it returns plain text
+			// bodies.
+			return fmt.Errorf("response %d: %s", rsp.StatusCode, string(body))
 		}
 		return fmt.Errorf("%s", errorDocumentToString(errorDoc))
 	}
