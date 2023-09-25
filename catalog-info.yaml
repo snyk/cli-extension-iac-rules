@@ -1,17 +1,17 @@
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-    name: cli-extension-iac-rules
-    annotations:
-        github.com/project-slug: snyk/cli-extension-iac-rules
-        circleci.com/project-slug: github/snyk/cli-extension-iac-rules
-    description: <
-        An extension to the Snyk CLI that provides workflows to author and manage custom rules for Snyk IaC.
-    labels:
-        snyk.io/businessCriticality: medium
-        snyk.io/visibility: private
-        snyk.io/metadata-version: "2022-23-01"
+  name: cli-extension-iac-rules
+  annotations:
+    github.com/project-slug: snyk/cli-extension-iac-rules
+    circleci.com/project-slug: github/snyk/cli-extension-iac-rules
+    github.com/team-slug: snyk/cloud-dev-ex
+  description: < An extension to the Snyk CLI that provides workflows to author and manage custom rules for Snyk IaC.
+  labels:
+    snyk.io/businessCriticality: medium
+    snyk.io/visibility: private
+    snyk.io/metadata-version: "2022-23-01"
 spec:
-    type: library
-    lifecycle: production
-    owner: "cloud-context"
+  type: snyk-cli-plugin
+  lifecycle: "-"
+  owner: cloud-dev-ex
