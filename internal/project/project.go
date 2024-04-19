@@ -22,6 +22,8 @@ import (
 	"github.com/open-policy-agent/opa/ast"
 	"github.com/snyk/policy-engine/pkg/data"
 	"github.com/snyk/policy-engine/pkg/engine"
+	"github.com/snyk/policy-engine/pkg/models"
+	"github.com/snyk/policy-engine/pkg/policy"
 	"github.com/snyk/policy-engine/pkg/rego"
 	"github.com/spf13/afero"
 )
@@ -127,6 +129,12 @@ func (p *Project) RelationNames() ([]string, error) {
 	var relations []string
 	err = eng.Query(ctx, &engine.QueryOptions{
 		Query: "data.relations[_][_].name",
+		ResourcesQuery: policy.NewResourcesQueryCache(func(ctx context.Context, req policy.ResourcesQuery) (policy.ResourcesResult, error) {
+			return policy.ResourcesResult{
+				ScopeFound: true,
+				Resources:  []models.ResourceState{},
+			}, nil
+		}),
 		ResultProcessor: func(v ast.Value) error {
 			var relation string
 			if err := rego.Bind(v, &relation); err != nil {
@@ -152,7 +160,12 @@ func (p *Project) RuleMetadata() (map[string]RuleMetadata, error) {
 	}
 
 	metadata := map[string]RuleMetadata{}
-	for _, r := range eng.Metadata(ctx) {
+	metadataResults, err := eng.Metadata(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, r := range metadataResults {
 		if r.Error != "" {
 			return nil, fmt.Errorf(r.Error)
 		}
@@ -180,7 +193,12 @@ func (p *Project) InputTypeForRule(ruleID string) (string, error) {
 	}
 
 	var pkg string
-	for _, r := range eng.Metadata(ctx) {
+	metadataResults, err := eng.Metadata(ctx)
+	if err != nil {
+		return "", err
+	}
+
+	for _, r := range metadataResults {
 		if r.Error != "" {
 			continue
 		}

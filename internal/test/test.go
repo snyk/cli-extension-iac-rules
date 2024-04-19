@@ -152,7 +152,13 @@ func testWorkflow(
 
 func makeRuleDirNameToRuleID(eng *engine.Engine, ctx context.Context) (map[string]string, error) {
 	out := map[string]string{}
-	for _, mdr := range eng.Metadata(ctx) {
+
+	metadataResults, err := eng.Metadata(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, mdr := range metadataResults {
 		if ruleID := mdr.Metadata.ID; ruleID != "" {
 			ruleDirName, err := project.RuleIDToSafeFileName(ruleID)
 			if err != nil {
