@@ -5,7 +5,7 @@ metadata:
   annotations:
     github.com/project-slug: snyk/cli-extension-iac-rules
     circleci.com/project-slug: github/snyk/cli-extension-iac-rules
-    github.com/team-slug: snyk/cloud-dev-ex
+    github.com/team-slug: snyk/iac
   description: < An extension to the Snyk CLI that provides workflows to author and manage custom rules for Snyk IaC.
   labels:
     snyk.io/businessCriticality: medium
@@ -14,4 +14,4 @@ metadata:
 spec:
   type: snyk-cli-plugin
   lifecycle: "-"
-  owner: cloud-dev-ex
+  owner: iac
