@@ -3,6 +3,16 @@ version: 2.1
 orbs:
   prodsec: snyk/prodsec-orb@1.0
 
+jobs:
+  security-scans:
+    docker:
+      - image: cimg/go:1.19.4
+    resource_class: small
+    steps:
+      - checkout
+      - prodsec/security_scans:
+          mode: auto
+
 workflows:
   version: 2
   CICD:
@@ -12,3 +22,7 @@ workflows:
           context:
             - snyk-bot-slack
           channel: group-infrastructure-as-code-alerts
+      - security-scans:
+          name: Security Scans
+          context:
+            - analysis-iac
