@@ -415,8 +415,8 @@ github.com/hashicorp/errwrap v1.1.0/go.mod h1:YH+1FKiLXxHSkmPseP+kNlulaMuP3n2brv
 github.com/hashicorp/go-cleanhttp v0.5.1/go.mod h1:JpRdi6/HCYpAwUzNwuwqhbovhLtngrth3wmdIIUrZ80=
 github.com/hashicorp/go-cleanhttp v0.5.2 h1:035FKYIWjmULyFRBKPs8TBQoi0x6d9G4xc9neXJWAZQ=
 github.com/hashicorp/go-cleanhttp v0.5.2/go.mod h1:kO/YDlP8L1346E6Sodw+PrpBSV4/SoxCXGY6BqNFT48=
-github.com/hashicorp/go-getter v1.7.4 h1:3yQjWuxICvSpYwqSayAdKRFcvBl1y/vogCxczWSmix0=
-github.com/hashicorp/go-getter v1.7.4/go.mod h1:W7TalhMmbPmsSMdNjD0ZskARur/9GJ17cfHTRtXV744=
+github.com/hashicorp/go-getter v1.7.5 h1:dT58k9hQ/vbxNMwoI5+xFYAJuv6152UNvdHokfI5wE4=
+github.com/hashicorp/go-getter v1.7.5/go.mod h1:W7TalhMmbPmsSMdNjD0ZskARur/9GJ17cfHTRtXV744=
 github.com/hashicorp/go-hclog v1.6.3 h1:Qr2kF+eVWjTiYmU7Y31tYlP1h0q/X3Nl3tPGdaB11/k=
 github.com/hashicorp/go-hclog v1.6.3/go.mod h1:W4Qnvbt70Wk/zYJryRzDRU/4r0kIg0PVHBcfoyhpF5M=
 github.com/hashicorp/go-multierror v1.1.1 h1:H5DkEtf6CXdFp0N0Em5UCwQpXMWke8IA0+lD48awMYo=
@@ -567,8 +567,8 @@ github.com/snyk/go-application-framework v0.0.0-20230502084119-2f982ec5943d h1:h
 github.com/snyk/go-application-framework v0.0.0-20230502084119-2f982ec5943d/go.mod h1:QMdFROeuG06UULLD2hzN/P9RlKE6Ma6eskMwAqVOMkM=
 github.com/snyk/go-httpauth v0.0.0-20230328170530-1af63c87b650 h1:CsLoEIHxq4i3d9di8RoN3J3D1/oK20oroEZUGShor0o=
 github.com/snyk/go-httpauth v0.0.0-20230328170530-1af63c87b650/go.mod h1:88KbbvGYlmLgee4OcQ19yr0bNpXpOr2kciOthaSzCAg=
-github.com/snyk/policy-engine v0.31.1 h1:8iPLkWY1+Vq5CiQifXB624jg2OG2U2Xtf5DPg5Yw14E=
-github.com/snyk/policy-engine v0.31.1/go.mod h1:Ius6tsg7E+FsRDhmhBc6F7xcHShz7mOzcHshDDPNjSE=
+github.com/snyk/policy-engine v0.31.3 h1:FepCg6QN/X8uvxYjF+WwB2aiBPJB+NENDgKQeI/FwLg=
+github.com/snyk/policy-engine v0.31.3/go.mod h1:Z9/hcngz+2txX4QfQRwfODk8F7w4mr/IQOvCtIosnLo=
 github.com/spaolacci/murmur3 v0.0.0-20180118202830-f09979ecbc72/go.mod h1:JwIasOWyU6f++ZhiEuf87xNszmSA2myDM2Kzu9HwQUA=
 github.com/spf13/afero v1.9.2 h1:j49Hj62F0n+DaZ1dDCvhABaPNSGNkt32oRFxI33IEMw=
 github.com/spf13/afero v1.9.2/go.mod h1:iUV7ddyEEZPO5gA3zD4fJt6iStLlL+Lg4m2cihcDf8Y=

@@ -10,7 +10,7 @@ require (
 	github.com/open-policy-agent/opa v0.51.0
 	github.com/rs/zerolog v1.29.1
 	github.com/snyk/go-application-framework v0.0.0-20230502084119-2f982ec5943d
-	github.com/snyk/policy-engine v0.31.1
+	github.com/snyk/policy-engine v0.31.3
 	github.com/spf13/afero v1.9.2
 	github.com/spf13/pflag v1.0.5
 	github.com/stretchr/testify v1.8.1
@@ -55,7 +55,7 @@ require (
 	github.com/googleapis/gax-go/v2 v2.12.0 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
-	github.com/hashicorp/go-getter v1.7.4 // indirect
+	github.com/hashicorp/go-getter v1.7.5 // indirect
 	github.com/hashicorp/go-hclog v1.6.3 // indirect
 	github.com/hashicorp/go-retryablehttp v0.7.7 // indirect
 	github.com/hashicorp/go-safetemp v1.0.0 // indirect
