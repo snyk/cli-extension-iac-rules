@@ -24,17 +24,20 @@ import (
 	"strings"
 )
 
-const version = "2023-05-22~experimental"
+const versionLegacyApi = "2023-05-22~experimental"
+const version = "2024-09-24~beta"
 
 type Client struct {
 	http *http.Client
 	url  string
+	iacNewEngine bool
 }
 
-func NewClient(http *http.Client, url string) *Client {
+func NewClient(http *http.Client, url string, iacNewEngine bool) *Client {
 	return &Client{
 		http: http,
 		url:  url,
+		iacNewEngine: iacNewEngine,
 	}
 }
 
@@ -43,8 +46,18 @@ func (c *Client) CreateCustomRules(ctx context.Context, orgID string, targz []by
 		"%s/rest/orgs/%s/cloud/rule_bundles?version=%s",
 		c.url,
 		orgID,
-		version,
+		versionLegacyApi,
 	)
+
+	if (c.iacNewEngine) {
+		url = fmt.Sprintf(
+			"%s/hidden/orgs/%s/cloud/rule_bundles?version=%s",
+			c.url,
+			orgID,
+			version,
+		)
+	}
+
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewBuffer(targz))
 	if err != nil {
 		return "", err
@@ -73,8 +86,19 @@ func (c *Client) UpdateCustomRules(
 		c.url,
 		orgID,
 		customRulesID,
-		version,
+		versionLegacyApi,
 	)
+
+	if (c.iacNewEngine) {
+		url = fmt.Sprintf(
+			"%s/hidden/orgs/%s/cloud/rule_bundles/%s?version=%s",
+			c.url,
+			orgID,
+			customRulesID,
+			version,
+		)
+	}
+
 	req, err := http.NewRequestWithContext(ctx, http.MethodPatch, url, bytes.NewBuffer(targz))
 	if err != nil {
 		return err
@@ -98,8 +122,19 @@ func (c *Client) DeleteCustomRules(
 		c.url,
 		orgID,
 		customRulesID,
-		version,
+		versionLegacyApi,
 	)
+
+	if (c.iacNewEngine) {
+		url = fmt.Sprintf(
+			"%s/hidden/orgs/%s/cloud/rule_bundles/%s?version=%s",
+			c.url,
+			orgID,
+			customRulesID,
+			version,
+		)
+	}
+
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, url, http.NoBody)
 	if err != nil {
 		return err
