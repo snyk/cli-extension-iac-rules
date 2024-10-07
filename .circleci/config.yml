@@ -12,6 +12,7 @@ jobs:
       - checkout
       - prodsec/security_scans:
           mode: auto
+          debug: true
 
 workflows:
   version: 2
