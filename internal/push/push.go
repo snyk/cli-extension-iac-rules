@@ -26,6 +26,7 @@ import (
 	"github.com/spf13/afero"
 	"github.com/spf13/pflag"
 
+	"github.com/snyk/cli-extension-iac-rules/internal/constants"
 	"github.com/snyk/cli-extension-iac-rules/internal/project"
 	"github.com/snyk/cli-extension-iac-rules/internal/service"
 )
@@ -81,6 +82,7 @@ func pushWorkflow(
 	client := service.NewClient(
 		ictx.GetNetworkAccess().GetHttpClient(),
 		config.GetString(configuration.API_URL),
+		config.GetBool(constants.FF_IAC_NEW_ENGINE),
 	)
 	manifest := prj.Manifest()
 	push := getManifestPushByOrganization(manifest, currentOrgID)

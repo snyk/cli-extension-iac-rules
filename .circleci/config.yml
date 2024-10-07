@@ -12,6 +12,8 @@ jobs:
       - checkout
       - prodsec/security_scans:
           mode: auto
+          debug: true
+          cli-version: 1.1293.0
 
 workflows:
   version: 2

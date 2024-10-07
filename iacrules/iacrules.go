@@ -15,8 +15,10 @@
 package iacrules
 
 import (
+	"github.com/snyk/go-application-framework/pkg/local_workflows/config_utils"
 	"github.com/snyk/go-application-framework/pkg/workflow"
 
+	"github.com/snyk/cli-extension-iac-rules/internal/constants"
 	initWorkflow "github.com/snyk/cli-extension-iac-rules/internal/init"
 	"github.com/snyk/cli-extension-iac-rules/internal/push"
 	"github.com/snyk/cli-extension-iac-rules/internal/repl"
@@ -36,5 +38,6 @@ func Init(e workflow.Engine) error {
 	if err := repl.RegisterWorkflows(e); err != nil {
 		return err
 	}
+	config_utils.AddFeatureFlagToConfig(e, constants.FF_IAC_NEW_ENGINE, constants.FF_IAC_NEW_ENGINE)
 	return nil
 }
