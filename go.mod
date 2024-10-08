@@ -9,7 +9,7 @@ require (
 	github.com/hexops/gotextdiff v1.0.3
 	github.com/open-policy-agent/opa v0.51.0
 	github.com/rs/zerolog v1.29.1
-	github.com/snyk/go-application-framework v0.0.0-20240404113733-1ee20e5f3ae4
+	github.com/snyk/go-application-framework v0.0.0-20240325175807-5cb112133ceb
 	github.com/snyk/policy-engine v0.31.3
 	github.com/spf13/afero v1.9.2
 	github.com/spf13/pflag v1.0.5

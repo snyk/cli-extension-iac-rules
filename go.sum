@@ -563,6 +563,8 @@ github.com/russross/blackfriday/v2 v2.1.0/go.mod h1:+Rmxgy9KzJVeS9/2gXHxylqXiyQD
 github.com/sahilm/fuzzy v0.1.0/go.mod h1:VFvziUEIMCrT6A6tw2RFIXPXXmzXbOsSHF0DOI8ZK9Y=
 github.com/sergi/go-diff v1.2.0 h1:XU+rvMAioB0UC3q1MFrIQy4Vo5/4VsRDQQXHsEya6xQ=
 github.com/sirupsen/logrus v1.9.0 h1:trlNQbNUG3OdDrDil03MCb1H2o9nJ1x4/5LYw7byDE0=
+github.com/snyk/go-application-framework v0.0.0-20240325175807-5cb112133ceb h1:ovhyFAt2BDPNmzJ1M2KuGz0s2GSfiY9VoMF4/EvMG00=
+github.com/snyk/go-application-framework v0.0.0-20240325175807-5cb112133ceb/go.mod h1:Yz/qxFyfhf0xbA+z8Vzr5IM9IDG+BS+2PiGaP1yAsEw=
 github.com/snyk/go-application-framework v0.0.0-20240404113733-1ee20e5f3ae4 h1:bwk32eWWmTUr2i3Wumab+VLUy5DICIQDNbyd2BfGU70=
 github.com/snyk/go-application-framework v0.0.0-20240404113733-1ee20e5f3ae4/go.mod h1:Yz/qxFyfhf0xbA+z8Vzr5IM9IDG+BS+2PiGaP1yAsEw=
 github.com/snyk/go-httpauth v0.0.0-20231117135515-eb445fea7530 h1:s9PHNkL6ueYRiAKNfd8OVxlUOqU3qY0VDbgCD1f6WQY=
