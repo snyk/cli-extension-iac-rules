@@ -13,6 +13,7 @@ jobs:
       - prodsec/security_scans:
           mode: auto
           debug: true
+          open-source-additional-arguments: --log-level=trace
 
 workflows:
   version: 2
