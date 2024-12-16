@@ -6,13 +6,12 @@ orbs:
 jobs:
   security-scans:
     docker:
-      - image: cimg/go:1.19.4
+      - image: cimg/go:1.22
     resource_class: small
     steps:
       - checkout
       - prodsec/security_scans:
           mode: auto
-          open-source-scan: disabled
 
 workflows:
   version: 2
