@@ -220,6 +220,12 @@ func (p *Project) InputTypeForRule(ruleID string) (string, error) {
 			}
 			return nil
 		},
+		ResourcesQuery: policy.NewResourcesQueryCache(func(ctx context.Context, req policy.ResourcesQuery) (policy.ResourcesResult, error) {
+			return policy.ResourcesResult{
+				ScopeFound: true,
+				Resources:  []models.ResourceState{},
+			}, nil
+		}),
 	})
 	if err != nil {
 		return "", err
