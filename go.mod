@@ -12,7 +12,7 @@ require (
 	github.com/open-policy-agent/opa v0.69.0
 	github.com/rs/zerolog v1.33.0
 	github.com/snyk/go-application-framework v0.0.0-20250107154543-11ab9f003b38
-	github.com/snyk/policy-engine v0.33.1
+	github.com/snyk/policy-engine v0.33.2
 	github.com/spf13/afero v1.11.0
 	github.com/spf13/pflag v1.0.5
 	github.com/stretchr/testify v1.10.0
@@ -181,7 +181,7 @@ require (
 	golang.org/x/exp v0.0.0-20240719175910-8a7402abbf56 // indirect
 	golang.org/x/mod v0.22.0 // indirect
 	golang.org/x/net v0.34.0 // indirect
-	golang.org/x/oauth2 v0.23.0 // indirect
+	golang.org/x/oauth2 v0.27.0 // indirect
 	golang.org/x/sync v0.11.0 // indirect
 	golang.org/x/sys v0.30.0 // indirect
 	golang.org/x/term v0.29.0 // indirect
