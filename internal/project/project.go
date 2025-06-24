@@ -19,7 +19,7 @@ import (
 	"fmt"
 
 	"github.com/hashicorp/go-multierror"
-	"github.com/open-policy-agent/opa/ast"
+	"github.com/open-policy-agent/opa/v1/ast"
 	"github.com/snyk/policy-engine/pkg/data"
 	"github.com/snyk/policy-engine/pkg/engine"
 	"github.com/snyk/policy-engine/pkg/models"

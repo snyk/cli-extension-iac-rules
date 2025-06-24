@@ -23,8 +23,9 @@ import (
 	"github.com/erikgeiser/promptkit/selection"
 	"github.com/erikgeiser/promptkit/textinput"
 	pluralize "github.com/gertd/go-pluralize"
-	"github.com/open-policy-agent/opa/ast"
+	"github.com/open-policy-agent/opa/v1/ast"
 	"github.com/rs/zerolog"
+
 	"github.com/snyk/cli-extension-iac-rules/internal/project"
 )
 

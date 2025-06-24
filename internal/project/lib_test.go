@@ -17,7 +17,7 @@ package project
 import (
 	"testing"
 
-	"github.com/open-policy-agent/opa/ast"
+	"github.com/open-policy-agent/opa/v1/ast"
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
 )

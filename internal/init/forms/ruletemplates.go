@@ -19,7 +19,7 @@ import (
 	_ "embed"
 	"text/template"
 
-	"github.com/open-policy-agent/opa/format"
+	"github.com/open-policy-agent/opa/v1/format"
 )
 
 //go:embed ruletemplates/multi.rego.tmpl

@@ -1,4 +1,4 @@
-relations[info] {
+relations contains info if {
 	info := snyk.relation_from_fields(
 		"{{.Name}}",
 		{"{{.LeftResourceType}}": [{{range .LeftAttributes}}"{{.}}",{{end}}]},

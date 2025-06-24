@@ -25,7 +25,7 @@ var testRelationsFile = []byte(`package relations
 
 import data.snyk
 
-relations[info] {
+relations contains info if {
 	info := snyk.relation_from_fields(
 		"aws_s3_bucket.logging",
 		{"aws_s3_bucket": ["id", "bucket"]},
@@ -50,7 +50,7 @@ metadata := {
 	]
 }
 
-deny[info] {
+deny contains info if {
 	contains(input.bucket, "bucket")
 	info := {
 		"resource": input
