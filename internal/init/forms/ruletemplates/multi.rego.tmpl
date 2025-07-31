@@ -8,7 +8,7 @@ metadata := {{.RuleMetadata}}
 
 {{.PrimaryResourcePlural}} := snyk.resources("{{.PrimaryResourceType}}")
 
-deny[info] {
+deny contains info if {
 	{{.PrimaryResourceSingular}} := {{.PrimaryResourcePlural}}[_]
 	{{.SecondaryResourcePlural}} := snyk.relates({{.PrimaryResourceSingular}}, "{{.Relation}}")
 
@@ -27,14 +27,14 @@ deny[info] {
 	}
 }
 
-resources[info] {
+resources contains info if {
 	{{.PrimaryResourceSingular}} := {{.PrimaryResourcePlural}}[_]
 	info := {
 		"primary_resource": {{.PrimaryResourceSingular}},
 	}
 }
 
-resources[info] {
+resources contains info if {
 	{{.PrimaryResourceSingular}} := {{.PrimaryResourcePlural}}[_]
 	{{.SecondaryResourcePlural}} := snyk.relates({{.PrimaryResourceSingular}}, "{{.Relation}}")
 	info := {

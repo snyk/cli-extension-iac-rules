@@ -6,7 +6,7 @@ resource_type := "{{.ResourceType}}"
 
 metadata := {{.RuleMetadata}}
 
-deny[info] {
+deny contains info if {
 	# TODO: add conditions so that this rule only returns when input is invalid. For example:
 	# input.some_property == "bad value"
 	info := {
