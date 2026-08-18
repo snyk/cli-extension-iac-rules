@@ -16,6 +16,7 @@ package project
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/hashicorp/go-multierror"
@@ -167,7 +168,7 @@ func (p *Project) RuleMetadata() (map[string]RuleMetadata, error) {
 
 	for _, r := range metadataResults {
 		if r.Error != "" {
-			return nil, fmt.Errorf(r.Error)
+			return nil, errors.New(r.Error)
 		}
 		metadata[r.Metadata.ID] = RuleMetadata{
 			ID:           r.Metadata.ID,
