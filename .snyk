@@ -57,4 +57,14 @@ ignore:
         reason: Imported by Policy Engine
         expires: 2025-05-04T00:00:00.000Z
         created: 2023-05-04T00:00:00.000Z
+  SNYK-GOLANG-GITHUBCOMOPENPOLICYAGENTOPAAST-11990966:
+    - '*':
+        reason: Blocked on IAC-3311, OPA v1 migration in progress, inherited from policy-engine
+        expires: 2027-09-02T00:00:00.000Z
+        created: 2026-09-02T00:00:00.000Z
+  SNYK-GOLANG-GOPKGINYAMLV2-12330650:
+    - '*':
+        reason: Transitive dependency of the unfixed OPA version, tracked under IAC-3311
+        expires: 2027-09-02T00:00:00.000Z
+        created: 2026-09-02T00:00:00.000Z
 patch: {}
