@@ -17,7 +17,8 @@ package project
 import (
 	"testing"
 
-	"github.com/open-policy-agent/opa/ast"
+	"github.com/open-policy-agent/opa/v1/ast"
+	"github.com/snyk/policy-engine/pkg/regoversion"
 	"github.com/spf13/afero"
 	"github.com/stretchr/testify/assert"
 )
@@ -28,7 +29,7 @@ func TestLibFromDir(t *testing.T) {
 	fsys.MkdirAll("existing/lib", 0755)
 	afero.WriteFile(fsys, "existing/lib/relations.rego", []byte(relationsStub), 0644)
 
-	expectedModule, err := ast.ParseModule("existing/lib/relations.rego", relationsStub)
+	expectedModule, err := ast.ParseModuleWithOpts("existing/lib/relations.rego", relationsStub, regoversion.ParserOptions())
 	assert.NoError(t, err)
 
 	testCases := []struct {
