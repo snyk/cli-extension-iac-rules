@@ -19,8 +19,17 @@ import (
 	_ "embed"
 	"text/template"
 
-	"github.com/open-policy-agent/opa/format"
+	"github.com/open-policy-agent/opa/v1/format"
+	"github.com/snyk/policy-engine/pkg/regoversion"
 )
+
+func formatRego(src []byte) ([]byte, error) {
+	parserOpts := regoversion.ParserOptions()
+	return format.SourceWithOpts("", src, format.Opts{
+		RegoVersion:   regoversion.Default,
+		ParserOptions: &parserOpts,
+	})
+}
 
 //go:embed ruletemplates/multi.rego.tmpl
 var multiRegoTmpl string
@@ -58,7 +67,7 @@ func templateMultiResourceRule(params multiResourceRuleParams) ([]byte, error) {
 	if err != nil {
 		return nil, err
 	}
-	return format.Source("", buf.Bytes())
+	return formatRego(buf.Bytes())
 }
 
 type singleResourceRuleParams struct {
@@ -74,7 +83,7 @@ func templateSingleResourceRule(params singleResourceRuleParams) ([]byte, error)
 	if err != nil {
 		return nil, err
 	}
-	return format.Source("", buf.Bytes())
+	return formatRego(buf.Bytes())
 }
 
 type relationParams struct {

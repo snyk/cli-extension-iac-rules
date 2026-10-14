@@ -19,8 +19,9 @@ import (
 	"errors"
 	"path/filepath"
 
-	"github.com/open-policy-agent/opa/ast"
-	"github.com/open-policy-agent/opa/format"
+	"github.com/open-policy-agent/opa/v1/ast"
+	"github.com/open-policy-agent/opa/v1/format"
+	"github.com/snyk/policy-engine/pkg/regoversion"
 	"github.com/spf13/afero"
 )
 
@@ -75,7 +76,7 @@ import data.snyk
 `
 
 func newRelationsFile(file *File) *relationsFile {
-	module, err := ast.ParseModule(file.Path(), relationsStub)
+	module, err := ast.ParseModuleWithOpts(file.Path(), relationsStub, regoversion.ParserOptions())
 	if err != nil {
 		// Our tests should eliminate this possibility
 		panic(err)
@@ -103,7 +104,7 @@ func relationsFileFromDir(fsys afero.Fs, parent string) (*relationsFile, error) 
 	if err != nil {
 		return nil, readPathError(file.Path(), err)
 	}
-	module, err := ast.ParseModule(file.Path(), string(contents))
+	module, err := ast.ParseModuleWithOpts(file.Path(), string(contents), regoversion.ParserOptions())
 	if err != nil {
 		return nil, pathError(file.Path(), ErrFailedToParseRegoFile, err)
 	}
@@ -116,7 +117,7 @@ func relationsFileFromDir(fsys afero.Fs, parent string) (*relationsFile, error) 
 }
 
 func (r *relationsFile) addRelation(contents string) (string, error) {
-	rule, err := ast.ParseRule(contents)
+	rule, err := ast.ParseRuleWithOpts(contents, regoversion.ParserOptions())
 	if err != nil {
 		return "", err
 	}
@@ -129,7 +130,7 @@ func (r *relationsFile) addRelation(contents string) (string, error) {
 }
 
 func (r *relationsFile) UpdateContents() error {
-	formatted, err := format.Ast(r.module)
+	formatted, err := format.AstWithOpts(r.module, format.Opts{RegoVersion: regoversion.Default})
 	if err != nil {
 		return err
 	}
