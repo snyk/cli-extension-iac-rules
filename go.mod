@@ -12,7 +12,7 @@ require (
 	github.com/open-policy-agent/opa v1.21.3
 	github.com/rs/zerolog v1.34.0
 	github.com/snyk/go-application-framework v0.0.0-20250107154543-11ab9f003b38
-	github.com/snyk/policy-engine v1.1.7
+	github.com/snyk/policy-engine v1.1.8
 	github.com/spf13/afero v1.15.0
 	github.com/spf13/pflag v1.0.10
 	github.com/stretchr/testify v1.12.1

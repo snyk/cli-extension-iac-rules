@@ -482,8 +482,8 @@ github.com/snyk/go-application-framework v0.0.0-20250107154543-11ab9f003b38 h1:b
 github.com/snyk/go-application-framework v0.0.0-20250107154543-11ab9f003b38/go.mod h1:U54yocklt2NHMeIKTNnWzmOgqhy6KvJgFQUqoIXoVio=
 github.com/snyk/go-httpauth v0.0.0-20231117135515-eb445fea7530 h1:s9PHNkL6ueYRiAKNfd8OVxlUOqU3qY0VDbgCD1f6WQY=
 github.com/snyk/go-httpauth v0.0.0-20231117135515-eb445fea7530/go.mod h1:88KbbvGYlmLgee4OcQ19yr0bNpXpOr2kciOthaSzCAg=
-github.com/snyk/policy-engine v1.1.7 h1:qF6BqVSCxCMhPfzQP42uRmP0tY0gFn+fjGJJawB1vEk=
-github.com/snyk/policy-engine v1.1.7/go.mod h1:05zec9grBZpy0TuRYAfMSOlUOU4v00eWySGM/ccSGDw=
+github.com/snyk/policy-engine v1.1.8 h1:3UByH4aMpk43/ji190Tj9nToUnep4g2WI0s+5tK4nnQ=
+github.com/snyk/policy-engine v1.1.8/go.mod h1:05zec9grBZpy0TuRYAfMSOlUOU4v00eWySGM/ccSGDw=
 github.com/spf13/afero v1.15.0 h1:b/YBCLWAJdFWJTN9cLhiXXcD7mzKn9Dm86dNnfyQw1I=
 github.com/spf13/afero v1.15.0/go.mod h1:NC2ByUVxtQs4b3sIUphxK0NioZnmxgyCrfzeuq8lxMg=
 github.com/spf13/cast v1.10.0 h1:h2x0u2shc1QuLHfxi+cTJvs30+ZAHOGRic8uyGTDWxY=
